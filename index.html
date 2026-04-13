@@ -453,7 +453,7 @@ body{background:#F0F4F8;font-family:Roboto,'Helvetica Neue',sans-serif;color:#1a
 
   </div>
 
-  <div class="sub-box">
+  <div class="sub-box" id="sub-box">
     <video autoplay muted loop playsinline poster="" oncanplay="this.classList.add('loaded')">
       <source src="https://videos.pexels.com/video-files/855029/855029-sd_640_360_24fps.mp4" type="video/mp4">
     </video>
@@ -1505,7 +1505,9 @@ function prefillReminder(email) {
 if (savedUser) {
   welcomeEl.classList.add('hidden');
   setGreeting(savedUser.name);
-  prefillReminder(savedUser.email);
+  if (savedUser.email) {
+    document.getElementById('sub-box').style.display = 'none';
+  }
 }
 
 document.getElementById('w-go').addEventListener('click', async () => {
