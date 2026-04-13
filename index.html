@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Utu Buster</title>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F0F4F8;font-family:Roboto,'Helvetica Neue',sans-serif;color:#1a1a2e;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding:0 0 40px}
+
+.hdr{position:relative;overflow:hidden;color:#F0F4F8;padding:32px 20px 0;text-align:center;background:linear-gradient(135deg,#0f1b2e,#1a3a5c,#2d1b3e);background-size:300% 300%;animation:hdr-shift 8s ease infinite}
+@keyframes hdr-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hdr-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1s}
+.hdr-video.loaded{opacity:1}
+.hdr-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(26,26,46,0.55);z-index:1}
+.hdr h1{position:relative;z-index:2;font-size:32px;font-weight:500;letter-spacing:2px;text-transform:uppercase;margin:0 0 4px}
+.hdr-greeting{position:relative;z-index:2;font-size:13px;font-weight:300;color:#F0F4F8;margin:0 0 12px;cursor:pointer;display:inline-block}
+.hdr-greeting:hover .signout{opacity:1}
+.signout{font-size:10px;color:#7EB8DA;margin-left:6px;opacity:0.6;text-transform:uppercase;letter-spacing:1px}
+.hdr-sub{font-size:12px;font-weight:400;color:#F0F4F8;opacity:0.6;padding:8px 0 14px}
+
+.tabs{display:flex;padding:0;background:transparent;position:relative;z-index:2}
+.tab{flex:1;text-align:center;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#F0F4F8;opacity:0.4;padding:11px 4px 10px;cursor:pointer;border-bottom:none;line-height:1.5;position:relative}
+.tab.on{color:#F0F4F8;opacity:1}
+.tab.on::before{content:'';position:absolute;top:0;left:20%;right:20%;height:3px;background:linear-gradient(to bottom,#7EB8DA,transparent);border-radius:0 0 3px 3px}
+.tab.on::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:3px;background:linear-gradient(to top,#7EB8DA,transparent);border-radius:3px 3px 0 0}
+
+.content{padding:0 20px}
+.panel{display:none}
+.panel.on{display:block}
+
+.lbl{font-size:9px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:#5A8FA8;padding:16px 0 8px}
+.intro{font-size:13px;font-weight:300;color:#1a1a2e;line-height:1.6;padding:0 0 4px}
+
+/* Household block */
+.hh-block{background:#1a1a2e;border-radius:6px;padding:16px;margin:16px 0 0}
+.hh-block .lbl{color:#7EB8DA;padding:0 0 8px}
+.hh-block .intro{color:#F0F4F8;opacity:0.6;padding:0 0 10px}
+.hh-block .hh-row{padding:0}
+.hh-block .hh-group label{color:#F0F4F8;opacity:0.7}
+.hh-block .hh-select{background:#252545;border-color:#2d2d4a;color:#F0F4F8}
+.hh-summary{font-size:13px;font-weight:400;color:#F0F4F8;opacity:0.6;padding:8px 0 0}
+
+/* Plan detection */
+.plan-detect{font-size:12px;font-weight:400;color:#5A8FA8;padding:4px 0 2px;line-height:1.5}
+.plan-detect span{font-weight:500}
+.plan-alts{padding:4px 0 0}
+.plan-alt{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;margin:4px 0;background:#EDF5FA;border:1px solid #D8E6EF;border-radius:6px;font-size:12px}
+.plan-alt .alt-left{font-weight:300;color:#1a1a2e}
+.plan-alt .alt-left strong{font-weight:500}
+.plan-alt .alt-save{font-weight:500;color:#2D7A4F;white-space:nowrap}
+
+/* Column headers — largest label in the form */
+.col-headers{display:flex;gap:8px;padding:16px 0 4px}
+.col-provider{flex:1;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#1a1a2e}
+.col-amount{width:90px;font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#1a1a2e;text-align:right}
+
+/* Household picker */
+.hh-row{display:flex;gap:16px;padding:8px 0 4px}
+.hh-group{display:flex;align-items:center;gap:8px}
+.hh-group label{font-size:12px;font-weight:400;color:#555}
+.hh-select{padding:8px 10px;border:1px solid #C5D5E0;background:#fff;border-radius:6px;font-size:13px;font-family:inherit;font-weight:400;color:#1a1a2e;appearance:none;-webkit-appearance:none;width:54px;text-align:center;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 4l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+
+
+/* Provider cards */
+.prov-card{background:#fff;border:1px solid #D8E6EF;border-radius:6px;padding:14px;margin:0 0 8px;cursor:pointer}
+.prov-card:active{opacity:0.9}
+.prov-top{display:flex;justify-content:space-between;align-items:flex-start}
+.prov-left{flex:1}
+.prov-badge{display:inline-block;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin:0 0 6px}
+.prov-badge.cheapest{background:#2D7A4F;color:#fff}
+.prov-badge.value{background:#EDF5FA;color:#5A8FA8}
+.prov-badge.local{background:#F0F4F8;color:#1a1a2e;border:1px solid #C5D5E0}
+.prov-name{font-size:14px;font-weight:500;margin:0 0 2px}
+.prov-plan{font-size:12px;color:#5A8FA8;font-weight:300}
+.prov-price{font-size:18px;font-weight:500;white-space:nowrap}
+.prov-price span{font-size:11px;font-weight:300;color:#5A8FA8}
+/* Expandable features */
+.prov-features{display:none;padding:10px 0 0;margin:10px 0 0;border-top:1px solid #D8E6EF}
+.prov-card.open .prov-features{display:block}
+.prov-feat{font-size:12px;font-weight:300;color:#444;padding:3px 0 3px 14px;position:relative;line-height:1.5}
+.prov-feat::before{content:'·';position:absolute;left:0;color:#5A8FA8;font-weight:600}
+.prov-link{display:inline-block;font-size:11px;color:#5A8FA8;text-decoration:none;font-weight:400;margin:8px 0 0}
+.prov-link:hover{text-decoration:underline}
+/* See all toggle */
+.see-all{font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;color:#5A8FA8;cursor:pointer;padding:8px 0;text-align:center}
+.see-all:active{opacity:0.7}
+/* Hidden providers */
+.prov-hidden{display:none}
+.prov-hidden.show{display:block}
+
+/* Tips bullets */
+.tip-bullets{padding:6px 0 0;margin:0;list-style:none}
+.tip-bullets li{font-size:13px;font-weight:300;color:#444;padding:4px 0 4px 14px;position:relative;line-height:1.5}
+.tip-bullets li::before{content:'·';position:absolute;left:0;color:#5A8FA8;font-weight:600}
+
+/* Help links */
+.help-card{background:#fff;border:1px solid #D8E6EF;border-radius:6px;padding:14px;margin:0 0 8px}
+.help-card.book{background:#1a1a2e;border-color:#2d2d4a}
+.help-card.book .help-name{color:#F0F4F8}
+.help-card.book .help-desc{color:#F0F4F8;opacity:0.7}
+.help-card.book .help-link{color:#7EB8DA}
+.help-card.govt{background:#EDF5FA;border-color:#C5D5E0}
+.help-name{font-size:14px;font-weight:500;margin:0 0 4px}
+.help-desc{font-size:12px;font-weight:300;color:#1a1a2e;line-height:1.5}
+.help-link{font-size:11px;color:#5A8FA8;text-decoration:none;font-weight:400;display:inline-block;margin:6px 0 0}
+
+/* Legacy provider styles (unused but kept for safety) */
+.provider{display:none}
+.star{color:#E8A87C;margin-right:2px}
+
+.wip-section{margin:0 0 16px}
+.wip-row{display:flex;gap:8px;align-items:center;margin:0 0 10px}
+.wip-select{flex:1;padding:10px 12px;border:1px solid #C5D5E0;background:#fff;border-radius:6px;font-size:13px;font-family:inherit;font-weight:300;color:#1a1a2e;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.wip-amount-wrap{position:relative;width:90px;flex-shrink:0}
+.wip-amount-wrap::before{content:'$';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;font-weight:400;color:#1a1a2e;pointer-events:none}
+.wip-amount{width:100%;padding:10px 12px 10px 24px;border:1px solid #C5D5E0;background:#fff;border-radius:6px;font-size:13px;font-family:inherit;font-weight:400;color:#1a1a2e;text-align:right;box-sizing:border-box}
+.wip-amount::placeholder{color:#B0C4D0}
+.wip-remove{width:32px;height:32px;border:none;background:none;color:#888;font-size:18px;cursor:pointer;padding:0;line-height:1}
+.wip-remove:hover{color:#E8A87C}
+.wip-add{padding:9px 14px;border:1px solid #C5D5E0;background:#fff;border-radius:6px;font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;color:#5A8FA8}
+.wip-add:active{opacity:0.8}
+
+.bust-it-btn{display:block;width:100%;padding:16px;margin:24px 0 0;background:#1a1a2e;color:#F0F4F8;border:none;border-radius:6px;font-size:14px;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:inherit;text-align:center}
+.bust-it-btn:active{opacity:0.9}
+
+.wip-totals{background:#fff;border:1px solid #D8E6EF;border-radius:6px;padding:20px;margin:0}
+.score-top{text-align:center;padding:0 0 16px;border-bottom:1px solid #D8E6EF}
+.score-grade{font-size:42px;font-weight:500;letter-spacing:-1px;line-height:1}
+.score-grade.good{color:#2D7A4F}
+.score-grade.ok{color:#E8A87C}
+.score-grade.high{color:#C0392B}
+.score-msg{font-size:13px;font-weight:300;color:#1a1a2e;margin:8px 0 0;line-height:1.5}
+.score-rows{padding:12px 0 0}
+.score-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;font-weight:300;color:#1a1a2e}
+.score-row span:last-child{font-weight:500;color:#1a1a2e}
+.score-row.save{border-top:1px solid #D8E6EF;padding:10px 0 4px;margin:6px 0 0}
+.score-row.save span{color:#2D7A4F;font-weight:500;font-size:16px}
+.score-row.annual span{color:#5A8FA8;font-size:12px;font-weight:400}
+
+.share-btn{display:block;width:100%;padding:12px;margin:12px 0 0;background:#EDF5FA;border:1px solid #C5D5E0;border-radius:6px;font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;font-family:inherit;color:#5A8FA8;text-align:center}
+.share-btn:active{opacity:0.8}
+
+.sub-box{position:relative;overflow:hidden;padding:16px 20px 20px;border-radius:6px;margin:20px 20px;background:linear-gradient(135deg,#0f1b2e,#1a3a5c,#2d1b3e);background-size:300% 300%;animation:hdr-shift 8s ease infinite}
+.sub-box video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1s}
+.sub-box video.loaded{opacity:1}
+.sub-box .sub-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(26,26,46,0.6);z-index:1}
+.sub-box>*:not(video):not(.sub-overlay){position:relative;z-index:2}
+.sub-box .lbl{color:#7EB8DA;padding:0 0 8px}
+.sub-box p{font-size:13px;font-weight:300;color:#F0F4F8;margin:0 0 12px;line-height:1.6}
+.sub-row{display:flex;gap:8px}
+.sub-row input{flex:1;padding:10px 12px;border:1px solid #2d2d4a;background:#252545;color:#F0F4F8;border-radius:6px;font-size:13px;font-family:inherit;font-weight:300}
+.sub-row input::placeholder{color:#F0F4F8;opacity:0.3}
+.sub-row button{padding:10px 16px;background:#7EB8DA;color:#1a1a2e;border:none;border-radius:6px;font-size:11px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;font-family:inherit}
+.sub-row button:active{opacity:0.8}
+.sub-msg{font-size:12px;font-weight:300;color:#95D5B2;margin:8px 0 0;display:none}
+
+/* Best picks list */
+.picks-list{margin:12px 0 0}
+.pick-row{padding:12px 14px;margin:0 0 6px;background:#fff;border:1px solid #D8E6EF;border-left:4px solid #2D7A4F;border-radius:6px;cursor:pointer}
+.pick-row:active{opacity:0.9}
+.pick-top{display:flex;justify-content:space-between;align-items:center}
+.pick-details{display:none;padding:8px 0 0;margin:8px 0 0;border-top:1px solid #D8E6EF}
+.pick-row.open .pick-details{display:block}
+.pick-feat{font-size:12px;font-weight:300;color:#1a1a2e;padding:3px 0 3px 14px;position:relative;line-height:1.5}
+.pick-feat::before{content:'·';position:absolute;left:0;color:#2D7A4F;font-weight:600}
+.switch-steps{padding:10px 0 0;margin:8px 0 0;border-top:1px solid #D8E6EF}
+.switch-lbl{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#2D7A4F;margin:0 0 8px}
+.pick-step{display:flex;gap:10px;font-size:12px;font-weight:300;color:#1a1a2e;padding:4px 0;line-height:1.5}
+.step-num{flex-shrink:0;width:20px;height:20px;background:#2D7A4F;color:#fff;border-radius:50%;font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center}
+.pick-link{display:inline-block;font-size:12px;color:#fff;background:#2D7A4F;text-decoration:none;font-weight:500;margin:12px 0 0;padding:10px 16px;border-radius:6px;letter-spacing:0.5px;text-align:center;width:100%}
+.pick-cat{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#2D7A4F;width:70px;flex-shrink:0}
+.pick-name{flex:1;font-size:13px;font-weight:500;color:#1a1a2e}
+.pick-name span{font-weight:300;color:#5A8FA8}
+.pick-price{font-size:14px;font-weight:600;color:#2D7A4F;white-space:nowrap}
+
+/* Comparison table in picks */
+.pick-compare{width:100%;border-collapse:collapse;margin:10px 0 0;font-size:11px}
+.pick-compare th{font-size:9px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#5A8FA8;text-align:left;padding:6px 8px;border-bottom:1px solid #D8E6EF}
+.pick-compare th:last-child{text-align:right;color:#2D7A4F}
+.pick-compare td{padding:5px 8px;font-weight:300;color:#1a1a2e;border-bottom:1px solid #F0F4F8}
+.pick-compare td:last-child{text-align:right;font-weight:500;color:#2D7A4F}
+.pick-compare tr:last-child td{border:none}
+.pick-compare .old{color:#5A8FA8}
+
+/* Paku whakaaro note */
+.paku-note{font-size:12px;font-weight:300;color:#5A8FA8;line-height:1.6;padding:12px 14px;margin:6px 0 0;background:#EDF5FA;border-radius:6px}
+.paku-note strong{font-weight:500;color:#1a1a2e}
+
+/* Change bills link */
+.change-link{display:block;text-align:center;padding:16px 0;font-size:12px;font-weight:400;color:#5A8FA8;cursor:pointer;text-decoration:none}
+
+/* Tap hint */
+.tap-hint{font-size:10px;font-weight:300;color:#5A8FA8;text-align:center;padding:4px 0 8px;letter-spacing:0.5px}
+
+/* Tips */
+.tip{background:#fff;border:1px solid #D8E6EF;border-radius:6px;padding:14px;margin:0 0 10px}
+.tip-title{font-size:14px;font-weight:500;margin:0 0 6px;line-height:1.4}
+.tip-body{font-size:13px;font-weight:300;color:#1a1a2e;line-height:1.65}
+.tip-source{font-size:11px;font-weight:300;color:#5A8FA8;margin:6px 0 0}
+
+/* Welcome overlay */
+.welcome{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(180deg,#0a1628 0%,#1a3a5c 30%,#c97b3a 60%,#e8a87c 80%,#f4d9bc 100%);background-size:100% 400%;-webkit-animation:sunrise 12s ease infinite;animation:sunrise 12s ease infinite}
+.welcome-video{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0;transition:opacity 1.5s ease}
+.welcome-video.loaded{opacity:1}
+@-webkit-keyframes sunrise{0%{background-position:0% 100%}50%{background-position:0% 0%}100%{background-position:0% 100%}}
+@keyframes sunrise{0%{background-position:0% 100%}50%{background-position:0% 0%}100%{background-position:0% 100%}}
+.welcome .welcome-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(10,22,40,0.55);z-index:1}
+.welcome.hidden{display:none}
+.welcome-card{position:relative;z-index:2;width:90%;max-width:380px;text-align:center;padding:0 20px}
+.welcome h2{font-size:32px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:#F0F4F8;margin:0 0 8px}
+.welcome-sub{font-size:13px;font-weight:300;color:#F0F4F8;margin:0 0 28px;line-height:1.5}
+.welcome-input{display:block;width:100%;padding:14px 16px;margin:0 0 12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:#F0F4F8;border-radius:6px;font-size:14px;font-family:inherit;font-weight:300}
+.welcome-input::placeholder{color:rgba(240,244,248,0.35)}
+.welcome-input:focus{outline:none;border-color:#7EB8DA}
+.welcome-err{font-size:12px;font-weight:400;color:#E8A87C;text-align:center;min-height:18px;margin:0 0 8px;line-height:1.5}
+.welcome-input.error{border-color:#E8A87C}
+.welcome-btn{display:block;width:100%;padding:16px;margin:8px 0 0;background:#F0F4F8;color:#1a1a2e;border:none;border-radius:6px;font-size:14px;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:inherit}
+.welcome-btn:disabled{opacity:0.6;cursor:wait}
+.welcome-btn:active{opacity:0.9}
+.welcome-skip{display:block;margin:20px auto 0;background:none;border:none;color:#7EB8DA;font-size:12px;font-weight:300;cursor:pointer;font-family:inherit;letter-spacing:0.5px}
+.welcome-skip:hover{opacity:0.8}
+
+.ftr{padding:12px 20px 20px;text-align:center}
+.ftr p{font-size:9px;color:#5A8FA8;font-weight:300;line-height:1.5}
+.ftr a{color:#5A8FA8;text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- Welcome -->
+<div class="welcome" id="welcome">
+  <video class="welcome-video" id="welcome-video" autoplay muted loop playsinline preload="auto">
+    <source src="/welcome-bg.mp4" type="video/mp4">
+  </video>
+  <div class="welcome-overlay"></div>
+  <div class="welcome-card">
+    <h2>Utu Buster</h2>
+    <div class="welcome-sub">Kia ora. This is a free wee tool for whānau in Aotearoa to save a bit of money on the bills. No account, no password, no fuss. Two minutes and you're sorted.</div>
+    <input class="welcome-input" id="w-name" type="text" placeholder="Ingoa tuatahi | First name">
+    <input class="welcome-input" id="w-email" type="email" placeholder="your@īmera.nz">
+    <div style="font-size:11px;font-weight:300;color:rgba(240,244,248,0.7);margin:6px 0 14px;line-height:1.6;text-align:left;">Just your email. No password. We send a pānui every 3 months, to keep you informed with what's available, that's it.</div>
+    <div class="welcome-err" id="w-err"></div>
+    <button class="welcome-btn" id="w-go">Tīmata | Let's go</button>
+    <div style="font-size:10px;font-weight:300;color:rgba(240,244,248,0.55);margin:18px 0 0;letter-spacing:0.5px;">Made by Big River Creative</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hdr">
+    <video class="hdr-video" autoplay muted loop playsinline poster="">
+      <source src="https://videos.pexels.com/video-files/855029/855029-sd_640_360_24fps.mp4" type="video/mp4">
+    </video>
+    <div class="hdr-overlay"></div>
+    <h1>Utu Buster</h1>
+    <div class="hdr-greeting" id="hdr-greeting"></div>
+    <div class="tabs">
+      <div class="tab on" data-tab="whatipay">What I Pay</div>
+      <div class="tab" data-tab="payless">Bust It</div>
+      <div class="tab" data-tab="tips">Tips</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- What I Pay -->
+    <div class="panel on" id="whatipay">
+      <div class="col-headers">
+        <span class="col-provider">Provider</span>
+        <span class="col-amount">$ p/m</span>
+      </div>
+
+      <div class="lbl">Pūngao | Energy</div>
+      <div class="wip-section">
+        <div class="wip-row">
+          <select class="wip-select" id="wip-power"><option value="">Power provider</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount" id="wip-power-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <div class="wip-row" id="wip-gas-row" style="display:none;">
+          <select class="wip-select" id="wip-gas"><option value="">Gas provider</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount" id="wip-gas-amt" type="number" placeholder="p/m"></div>
+          <button class="wip-remove" id="wip-gas-remove" title="Remove">×</button>
+        </div>
+        <div class="wip-row" id="wip-solar-row" style="display:none;">
+          <select class="wip-select" id="wip-solar-provider" style="flex:1;"><option value="">Solar buy-back provider</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount" id="wip-solar-amt" type="number" placeholder="credit"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="wip-add" id="wip-add-gas">+ Gas</button>
+          <button class="wip-add" id="wip-add-solar">+ Solar</button>
+        </div>
+      </div>
+
+      <div class="lbl">Ipurangi | Broadband</div>
+      <div class="wip-section">
+        <div class="wip-row">
+          <select class="wip-select" id="wip-bb"><option value="">Choose your provider</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount" id="wip-bb-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <div class="plan-detect" id="bb-detect" style="display:none;"></div>
+        <div class="plan-alts" id="bb-alts" style="display:none;"></div>
+      </div>
+
+      <div class="lbl">Waea | Mobile</div>
+      <div class="wip-section" id="wip-mobile-section"></div>
+
+      <div class="lbl">Whakaata | Streaming</div>
+      <div class="wip-section" id="wip-streaming-section">
+        <div class="wip-row" data-stream="0">
+          <select class="wip-select wip-stream-select"><option value="">Choose a service</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount wip-stream-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <button class="wip-add" id="wip-add-stream">+ Streaming</button>
+      </div>
+
+      <div class="lbl">Waiata | Music</div>
+      <div class="wip-section" id="wip-music-section">
+        <div class="wip-row" data-music="0">
+          <select class="wip-select wip-music-select"><option value="">Choose a service</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount wip-music-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <button class="wip-add" id="wip-add-music">+ Music</button>
+      </div>
+
+      <div class="lbl">Inihua | Insurance</div>
+      <div class="wip-section" id="wip-insurance-section">
+        <div class="wip-row" data-ins="0">
+          <select class="wip-select wip-ins-select"><option value="">Choose type</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount wip-ins-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <button class="wip-add" id="wip-add-ins">+ Insurance</button>
+      </div>
+
+      <div class="lbl">Hangarau | AI + Tech</div>
+      <div class="wip-section" id="wip-ai-section">
+        <div class="wip-row" data-ai="0">
+          <select class="wip-select wip-ai-select"><option value="">Choose a service</option></select>
+          <div class="wip-amount-wrap"><input class="wip-amount wip-ai-amt" type="number" placeholder="p/m"></div>
+        </div>
+        <button class="wip-add" id="wip-add-ai">+ AI / Tech</button>
+      </div>
+
+      <button class="bust-it-btn" id="bust-it-btn">Patua | Bust It</button>
+
+    </div>
+
+    <!-- Pay Less -->
+    <div class="panel" id="payless">
+      <!-- Score card -->
+      <div id="wip-totals" style="display:none;">
+        <div class="wip-totals" style="margin:16px 0 0;">
+          <div class="score-top">
+            <div class="score-grade" id="score-grade"></div>
+            <div class="score-msg" id="score-msg"></div>
+          </div>
+          <div class="score-rows">
+            <div class="score-row"><span>You pay</span><span id="wip-current-total">$0/mo</span></div>
+            <div class="score-row"><span>Could be</span><span id="wip-best-total">$0/mo</span></div>
+          </div>
+        </div>
+        <div id="savings-total" style="display:none;background:#2D7A4F;border-radius:0 0 6px 6px;padding:14px;margin:-1px 0 0;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div style="font-size:24px;font-weight:500;color:#fff;">Save <span id="wip-diff">$0</span>/mo</div>
+            <div style="font-size:13px;color:#fff;" id="wip-annual-amt">$0/year</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Best picks per category -->
+      <div style="display:none;align-items:center;justify-content:space-between;margin:20px 0 0;" id="picks-header">
+        <div class="lbl" id="picks-lbl" style="display:block;padding:0;">Best + Cheapest Option</div>
+        <button class="share-btn" id="share-btn" style="display:block;width:auto;margin:0;padding:8px 14px;font-size:10px;">Share</button>
+      </div>
+      <div id="best-picks" style="display:none;"></div>
+      <div class="tap-hint" id="tap-hint" style="display:none;">Tap any option for details</div>
+
+      <button class="share-btn" id="toggle-breakdown">Full Option Breakdown</button>
+
+      <div id="breakdown-wrap" style="display:none;">
+
+      <div class="lbl">Hiko | Power</div>
+      <div id="power-list"></div>
+
+      <div class="lbl" id="gas-lbl">Kaha | Gas</div>
+      <div id="gas-list"></div>
+
+      <div class="lbl">Ipurangi | Broadband</div>
+      <div id="broadband-list"></div>
+
+      <div class="lbl">Waea | Mobile</div>
+      <div id="mobile-list"></div>
+
+      <div class="lbl">Whakaata | Streaming</div>
+      <div id="streaming-list"></div>
+
+      <div class="lbl">Waiata | Music</div>
+      <div id="music-list"></div>
+
+      <div class="lbl" id="ins-lbl">Inihua | Insurance</div>
+      <div id="insurance-list"></div>
+
+      <div class="lbl">Hangarau | AI + Tech</div>
+      <div id="ai-list"></div>
+
+      </div>
+
+      <button class="share-btn" id="change-bills">Change my bills</button>
+    </div>
+
+    <!-- Tips -->
+    <div class="panel" id="tips">
+      <div class="col-headers"><span class="col-provider">Weekly Tips</span></div>
+      <div id="tips-list"></div>
+
+      <div class="lbl" style="margin-top:8px;">Borrow from your library</div>
+      <p class="intro">Free on Libby with your library card.</p>
+
+      <div class="help-card book">
+        <div class="help-name">The Barefoot Investor — Scott Pape</div>
+        <div class="help-desc">The most practical money book going. Written for normal people, not finance bros. The bucket system for organising your accounts is worth the read alone. Available as ebook and audiobook on Libby.</div>
+        <a class="help-link" id="library-link" href="https://www.wcl.govt.nz" target="_blank" rel="noopener">Find it at your library ↗</a>
+      </div>
+
+      <div class="lbl" style="margin-top:8px;">Free help with money</div>
+      <p class="intro">Government-backed, no strings, no judgement.</p>
+
+      <div class="help-card govt">
+        <div class="help-name">Citizens Advice Bureau</div>
+        <div class="help-desc">Free advice on tenancy rights, consumer complaints, government entitlements. Walk in or call 0800 367 222. They'll tell you what you're actually entitled to.</div>
+        <a class="help-link" id="cab-link" href="https://www.cab.org.nz/find-cab" target="_blank" rel="noopener">Find one near me ↗</a>
+      </div>
+
+      <div class="help-card govt">
+        <div class="help-name">Sorted</div>
+        <div class="help-desc">Free budgeting tool from the Commission for Financial Capability. Build a budget in 10 minutes, set goals, track spending. Works on your phone.</div>
+        <a class="help-link" href="https://sorted.org.nz/tools/budgeting-tool" target="_blank" rel="noopener">sorted.org.nz ↗</a>
+      </div>
+
+      <div class="help-card govt">
+        <div class="help-name">MoneyTalks</div>
+        <div class="help-desc">Free financial helpline — ring 0800 345 123 or text 4029. Talk to a real person about debt, bills, budgeting. No sales, just help. Available Mon–Fri 8am–5pm.</div>
+        <a class="help-link" href="https://www.moneytalks.co.nz" target="_blank" rel="noopener">moneytalks.co.nz ↗</a>
+      </div>
+
+      <div id="tips-book-alt"></div>
+    </div>
+
+  </div>
+
+  <div class="sub-box">
+    <video autoplay muted loop playsinline poster="" oncanplay="this.classList.add('loaded')">
+      <source src="https://videos.pexels.com/video-files/855029/855029-sd_640_360_24fps.mp4" type="video/mp4">
+    </video>
+    <div class="sub-overlay"></div>
+    <div class="lbl">Utu Buster Reminder</div>
+    <p>We'll email you every 3 months to keep you informed, so you can save money.</p>
+    <div class="sub-row">
+      <input type="email" id="sub-email" placeholder="your@īmera.nz">
+      <button id="sub-btn">Subscribe</button>
+    </div>
+    <div class="sub-msg" id="sub-msg"></div>
+  </div>
+
+
+  <div class="ftr">
+    <p>Prices from provider websites + MBIE data.<br>Always check providers for current rates.</p>
+    <p style="margin:16px 0 0;font-size:10px;letter-spacing:1px;">Made with aroha by <a href="https://www.bigrivercreative.org" target="_blank" rel="noopener">bigrivercreative.org</a></p>
+  </div>
+</div>
+
+<script>
+// ─── Live price loader ──────────────────────────────────
+// Try to load fresh prices from Vercel Blob (updated daily by bill-scan cron)
+// Falls back to inline data below if unavailable or stale
+const BLOB_PRICES_URL = 'https://s9wbsuovo8baeedq.public.blob.vercel-storage.com/bill-prices.json';
+let livePricesLoaded = false;
+
+async function tryLoadLivePrices() {
+  try {
+    const r = await fetch(BLOB_PRICES_URL, { cache: 'no-store' });
+    if (!r.ok) return;
+    const result = await r.json();
+    // Only use if scanned within last 48 hours
+    const age = Date.now() - new Date(result.lastScanned).getTime();
+    if (age > 48 * 60 * 60 * 1000) return;
+
+    // Merge live prices but keep features from inline data
+    const d = result.data;
+    function mergePrices(inline, live) {
+      if (!live) return;
+      live.forEach(lp => {
+        const match = inline.find(ip => ip.name === lp.name && ip.plan === lp.plan);
+        if (match) {
+          if (lp.monthly !== undefined) match.monthly = lp.monthly;
+          if (lp.monthlyEstimate !== undefined) match.monthlyEstimate = lp.monthlyEstimate;
+          match.fresh = true;
+        }
+      });
+    }
+    mergePrices(POWER.providers, d.power);
+    mergePrices(BROADBAND.providers, d.broadband);
+    mergePrices(MOBILE.providers, d.mobile);
+    mergePrices(STREAMING.providers, d.streaming);
+    mergePrices(MUSIC.providers, d.music);
+    livePricesLoaded = true;
+
+    renderAllProviders();
+    recalcTotals();
+  } catch { /* fallback to inline data */ }
+}
+
+// ─── Data (fallback) ─────────────────────────────────────
+const POWER = {
+  providers: [
+    { name:'Electric Kiwi', plan:'Stay Ahead 200', monthlyEstimate:155, note:'Choose 1 free hour daily', url:'https://www.electrickiwi.co.nz/plans', local:'NZ-owned', features:['No fixed term — leave anytime','1 free hour of power every day, you choose when','NZ-owned company'] },
+    { name:'Contact Energy', plan:'Good Nights', monthlyEstimate:165, note:'Free power 9pm–midnight', url:'https://contact.co.nz/personal/all-plans', features:['No fixed term — leave anytime','Free electricity every night 9pm to midnight','Dual fuel discount if you add gas'] },
+    { name:'Meridian', plan:'Simple', monthlyEstimate:178, note:'Certified carbon zero', url:'https://www.meridianenergy.co.nz/for-home/pricing-rates', local:'Carbon zero', features:['No fixed term — leave anytime','100% certified carbon zero electricity','Earn Airpoints on your power bill'] },
+    { name:'Mercury', plan:'Freestyle', monthlyEstimate:180, note:'Airpoints earn', url:'https://www.mercury.co.nz/electricity', features:['No fixed term — leave anytime','Earn Airpoints on every bill','Online account management, no paper bills'] },
+    { name:'Genesis', plan:'Energy Basic', monthlyEstimate:185, note:'Dual fuel discount with gas', url:'https://www.genesisenergy.co.nz/power', features:['No fixed term — leave anytime','Discount when you bundle power + gas','Fixed price plans available for bill certainty'] },
+  ]
+};
+
+const GAS = {
+  providers: [
+    { name:'Nova', plan:'Residential Gas', monthly:55, note:'Gas-only specialist', url:'https://www.novaenergy.co.nz', local:'NZ-owned', features:['No fixed term — leave anytime','Often cheapest for gas-only customers','NZ-owned, Wellington-based'] },
+    { name:'Genesis', plan:'Gas + Power Bundle', monthly:60, note:'Cheapest when bundled with power', url:'https://www.genesisenergy.co.nz/gas', features:['No fixed term — leave anytime','$10–15/mo discount when bundled with Genesis power','One bill for power + gas'] },
+    { name:'Contact Energy', plan:'Gas Plan', monthly:65, note:'Bundle with power', url:'https://www.contact.co.nz/residential/gas', features:['No fixed term — leave anytime','Bundle with power for one account','Free power 9pm–midnight if on Good Nights'] },
+    { name:'Mercury', plan:'Gas', monthly:70, note:'Airpoints on gas too', url:'https://www.mercury.co.nz/gas', features:['No fixed term — leave anytime','Earn Airpoints on your gas bill','Bundle with Mercury power'] },
+  ]
+};
+
+const SOLAR = {
+  buyback: [
+    { name:'Contact Energy', rate:'8c/kWh', note:'Standard buy-back rate' },
+    { name:'Mercury', rate:'12c/kWh', note:'Higher buy-back, varies by region' },
+    { name:'Meridian', rate:'8c/kWh', note:'Carbon zero provider' },
+    { name:'Electric Kiwi', rate:'10c/kWh', note:'Competitive buy-back' },
+  ]
+};
+
+const BROADBAND = {
+  providers: [
+    { name:'Skinny', plan:'Unlimited Fibre', speed:'100/20', monthly:63, note:'Cheapest unlimited fibre', url:'https://www.skinny.co.nz/broadband/', features:['No contract — leave anytime','100/20 Mbps, unlimited data','Self-service app, no call centre needed'] },
+    { name:'Now', plan:'Naked Fibre 300', speed:'300/100', monthly:69, note:'Fast and cheap', url:'https://www.nownz.co.nz/personal/', local:'NZ-owned (Vocus)', features:['No contract — month to month','300/100 Mbps, unlimited data','NZ-owned (Vocus), no phone line needed'] },
+    { name:'2degrees', plan:'Broadband Fibre', speed:'100/20', monthly:85, note:'Bundle saves $5/mo', url:'https://www.2degrees.nz/broadband', features:['No fixed term — leave anytime','100/20 Mbps, unlimited data','$5/mo off when bundled with 2degrees mobile'] },
+    { name:'Spark', plan:'Home Fibre', speed:'100/20', monthly:90, note:'Bundle saves $10/mo', url:'https://www.spark.co.nz/shop/internet/', features:['No fixed term — leave anytime','100/20 Mbps, unlimited data','$10/mo off when bundled with Spark mobile'] },
+    { name:'One NZ', plan:'Unlimited Fibre', speed:'100/20', monthly:95, note:'Bundle saves $10/mo', url:'https://www.one.nz/broadband/', features:['No fixed term — leave anytime','100/20 Mbps, unlimited data','$10/mo off when bundled with One NZ mobile'] },
+  ]
+};
+
+// All broadband tiers by provider — used for price-matching
+const BB_TIERS = [
+  // Skinny
+  { name:'Skinny', plan:'Unlimited Fibre', speed:'100/20 Mbps', monthly:63 },
+  // Now
+  { name:'Now', plan:'Naked Fibre 100', speed:'100/20 Mbps', monthly:55 },
+  { name:'Now', plan:'Naked Fibre 300', speed:'300/100 Mbps', monthly:69 },
+  { name:'Now', plan:'Naked Fibre Max', speed:'900/400 Mbps', monthly:85 },
+  // 2degrees
+  { name:'2degrees', plan:'Broadband Fibre', speed:'100/20 Mbps', monthly:85 },
+  { name:'2degrees', plan:'Fibre 300', speed:'300/100 Mbps', monthly:95 },
+  { name:'2degrees', plan:'Fibre Max', speed:'900/400 Mbps', monthly:105 },
+  // Spark
+  { name:'Spark', plan:'Home Fibre', speed:'100/20 Mbps', monthly:90 },
+  { name:'Spark', plan:'Fibre 300', speed:'300/100 Mbps', monthly:100 },
+  { name:'Spark', plan:'Fibre Max', speed:'900/400 Mbps', monthly:110 },
+  { name:'Spark', plan:'Wireless Broadband', speed:'4G/5G', monthly:80 },
+  // One NZ
+  { name:'One NZ', plan:'Unlimited Fibre', speed:'100/20 Mbps', monthly:95 },
+  { name:'One NZ', plan:'Fibre 300', speed:'300/100 Mbps', monthly:105 },
+  { name:'One NZ', plan:'Fibre Max', speed:'900/400 Mbps', monthly:115 },
+  { name:'One NZ', plan:'UltraFast HFC Max', speed:'HFC 600+', monthly:105 },
+  // Orcon
+  { name:'Orcon', plan:'Unlimited Fibre', speed:'100/20 Mbps', monthly:85 },
+  { name:'Orcon', plan:'Fibre Pro', speed:'300/100 Mbps', monthly:95 },
+  { name:'Orcon', plan:'Hyper Fibre', speed:'2000/2000 Mbps', monthly:120 },
+  // Slingshot
+  { name:'Slingshot', plan:'Unlimited Fibre', speed:'100/20 Mbps', monthly:80 },
+  { name:'Slingshot', plan:'Fibre Pro', speed:'300/100 Mbps', monthly:90 },
+  // Trustpower
+  { name:'Trustpower', plan:'Unlimited Fibre', speed:'100/20 Mbps', monthly:85 },
+  { name:'Trustpower', plan:'Fibre Pro', speed:'300/100 Mbps', monthly:95 },
+];
+
+const MOBILE = {
+  providers: [
+    { name:'Kogan Mobile', plan:'365-day 500GB', type:'Prepay (annual)', data:'500GB/yr', monthly:25, note:'Pay yearly, save heaps', url:'https://www.kogan.com/nz/kogan-mobile/', features:['No contract — pay $300 upfront for the year','500GB data for 12 months','One NZ (Vodafone) network'] },
+    { name:'Skinny', plan:'$27/4wk', type:'Prepay', data:'4GB+Endless', monthly:27, note:'Cheapest rolling prepay', url:'https://www.skinny.co.nz/pricing/plans/', features:['No contract — top up when you want','4GB full speed, then endless slower data','Spark network'] },
+    { name:'Skinny', plan:'$40/4wk', type:'Prepay', data:'10GB+Endless', monthly:40, note:'More data, same deal', url:'https://www.skinny.co.nz/pricing/plans/', features:['No contract — top up when you want','10GB full speed, then endless slower data','Spark network'] },
+    { name:'One NZ', plan:'Prepay $40', type:'Prepay', data:'10GB+Endless', monthly:40, note:'Best rural coverage', url:'https://www.one.nz/plans/', features:['No contract — prepay, cancel anytime','10GB full speed, then endless slower data','One NZ network — best rural coverage, 5G in cities'] },
+    { name:'2degrees', plan:'Pay Monthly $40', type:'Contract', data:'8GB+Carryover', monthly:40, note:'Data rolls over', url:'https://www.2degrees.nz/mobile', local:'NZ-owned', features:['Monthly contract — can cancel with 30 days notice','8GB data, unused rolls over to next month','2degrees network — NZ-owned, NZ call centre'] },
+    { name:'Spark', plan:'No Limit $50', type:'Contract', data:'Unlimited', monthly:50, note:'Truly unlimited', url:'https://www.spark.co.nz/shop/mobile/plans', features:['Monthly contract — can cancel with 30 days notice','Unlimited data, no cap at all','Spark network — widest coverage, 5G in cities'] },
+    { name:'Mighty Mobile', plan:'Fast', type:'Prepay', data:'Unlimited @ 10Mbps', monthly:40, note:'Unlimited data, capped speed', url:'https://www.mightymobile.co.nz/', features:['No contract — prepay, cancel anytime','Truly unlimited data at 10Mbps (no throttling)','One NZ network, hotspot included'] },
+    { name:'Mighty Mobile', plan:'Faster', type:'Prepay', data:'Unlimited full speed', monthly:50, note:'Unlimited full speed, $41.58/mo annual', url:'https://www.mightymobile.co.nz/', features:['No contract — or save with $499 annual upfront','Unlimited data at full 5G speed','One NZ network, hotspot + $8/day roaming'] },
+  ]
+};
+
+const STREAMING = {
+  providers: [
+    { name:'Prime Video', plan:'Monthly', monthly:8.99, note:'Great value library', url:'https://www.primevideo.com/', features:['No ads on most content','1 screen, HD quality','The Boys, Reacher, Rings of Power'] },
+    { name:'Neon', plan:'Basic with Ads', monthly:14.99, note:'HBO content, with ads', url:'https://www.neontv.co.nz/', features:['Ads during shows','1 screen, HD quality','HBO — House of the Dragon, Last of Us, Succession'] },
+    { name:'Disney+', plan:'Standard', monthly:16.99, note:'Kids + Marvel + Star Wars', url:'https://www.disneyplus.com/en-nz', features:['No ads, offline downloads','2 screens, Full HD quality','Disney, Pixar, Marvel, Star Wars'] },
+    { name:'Netflix', plan:'Basic', monthly:17.99, note:'Entry tier', url:'https://www.netflix.com/nz/', features:['No ads','1 screen, 720p quality','Biggest content library in NZ'] },
+    { name:'Apple TV+', plan:'Monthly', monthly:17.99, note:'Quality over quantity', url:'https://tv.apple.com/nz', features:['No ads, offline downloads','6 screens, 4K quality','Severance, Ted Lasso, Slow Horses'] },
+    { name:'Disney+', plan:'Premium', monthly:21.99, note:'No ads, 4K', url:'https://www.disneyplus.com/en-nz', features:['No ads, offline downloads','4 screens, 4K quality','Disney, Pixar, Marvel, Star Wars'] },
+    { name:'Neon', plan:'Standard', monthly:23.99, note:'HBO, no ads', url:'https://www.neontv.co.nz/', features:['No ads, offline downloads','2 screens, Full HD quality','HBO — House of the Dragon, Last of Us, Succession'] },
+    { name:'Netflix', plan:'Standard', monthly:25.99, note:'HD, 2 screens', url:'https://www.netflix.com/nz/', features:['No ads, offline downloads','2 screens, Full HD 1080p','Biggest content library in NZ'] },
+    { name:'Netflix', plan:'Premium', monthly:33.99, note:'4K, 4 screens', url:'https://www.netflix.com/nz/', features:['No ads, offline downloads','4 screens, 4K + HDR quality','Biggest content library in NZ'] },
+  ]
+};
+
+const MUSIC = {
+  providers: [
+    { name:'Spotify', plan:'Free', monthly:0, note:'Free with ads', url:'https://open.spotify.com', features:['Ads between songs','1 person, shuffle only on mobile','Standard audio quality'] },
+    { name:'Tidal', plan:'Individual', monthly:12.99, note:'Hi-fi audio', url:'https://tidal.com/', features:['No ads, offline downloads','1 person','Hi-fi and master quality audio'] },
+    { name:'Apple Music', plan:'Individual', monthly:16.99, note:'Lossless audio', url:'https://www.apple.com/nz/apple-music/', features:['No ads, offline downloads','1 person','Lossless and spatial audio'] },
+    { name:'Spotify', plan:'Premium', monthly:18.99, note:'No ads, full control', url:'https://www.spotify.com/nz/premium/', features:['No ads, offline downloads','1 person','High quality audio'] },
+    { name:'YouTube', plan:'Premium', monthly:22.99, note:'YouTube + Music', url:'https://www.youtube.com/premium', features:['No ads on YouTube + Music','1 person','Standard audio quality'] },
+    { name:'Spotify', plan:'Duo', monthly:25.49, note:'For couples', forHousehold:'duo', url:'https://www.spotify.com/nz/duo/', features:['No ads, offline downloads','2 people ($12.75 each)','High quality audio'] },
+    { name:'Apple Music', plan:'Family', monthly:25.99, note:'Up to 6 people', forHousehold:'family', url:'https://www.apple.com/nz/apple-music/', features:['No ads, offline downloads','Up to 6 people','Lossless and spatial audio'] },
+    { name:'Spotify', plan:'Family', monthly:29.99, note:'Up to 6 accounts', forHousehold:'family', url:'https://www.spotify.com/nz/family/', features:['No ads, offline downloads','Up to 6 people + Spotify Kids','High quality audio'] },
+    { name:'YouTube', plan:'Family', monthly:39.99, note:'YouTube for the whole house', forHousehold:'family', url:'https://www.youtube.com/premium', features:['No ads on YouTube + Music','Up to 5 people','Standard audio quality'] },
+  ]
+};
+
+const INSURANCE = {
+  types: ['Home','Car','Contents','Income Protection','Health','Life','Travel'],
+  providers: [
+    { name:'AA Insurance', plan:'Home + Contents', monthly:95, note:'NZ-owned (AA)', url:'https://www.aainsurance.co.nz', local:'NZ-owned', features:['No fixed term — cancel anytime','Multi-policy discount for home + car','NZ-owned, NZ call centre'] },
+    { name:'State', plan:'Home + Contents', monthly:85, note:'Part of IAG', url:'https://www.state.co.nz', features:['No fixed term — cancel anytime','Online claims process','Multi-policy discount available'] },
+    { name:'AMI', plan:'Home + Contents', monthly:90, note:'Part of IAG', url:'https://www.ami.co.nz', features:['No fixed term — cancel anytime','Community-focused NZ brand','Multi-policy discount available'] },
+    { name:'Tower', plan:'Home + Contents', monthly:80, note:'Risk-based pricing', url:'https://www.tower.co.nz', local:'NZ-owned', features:['No fixed term — cancel anytime','Risk-based pricing — can be cheaper in low-risk areas','NZ-owned, listed on NZX'] },
+    { name:'Cove', plan:'Car Insurance', monthly:45, note:'Online-only, cheaper', url:'https://www.coveinsurance.co.nz', local:'NZ-owned', features:['No fixed term — cancel anytime','Online-only so lower overheads, cheaper premiums','NZ-owned startup'] },
+    { name:'Mighty Ape Insurance', plan:'Car Insurance', monthly:40, note:'First month free on new policies', url:'https://www.mightyapeinsurance.co.nz', features:['No fixed term — cancel anytime','One month free on new car policies (up to $100)','Underwritten by trusted NZ insurer'] },
+    { name:'Mighty Ape Insurance', plan:'Pet Insurance', monthly:35, note:'Vet bill cover for dogs + cats', url:'https://www.mightyapeinsurance.co.nz', features:['No fixed term — cancel anytime','Covers accidents and illness vet bills','Online signup, no broker'] },
+    { name:'Mighty Ape Insurance', plan:'Travel Insurance', monthly:25, note:'Single or multi-trip', url:'https://www.mightyapeinsurance.co.nz', features:['Cancel before travel','Medical, cancellation + baggage cover','Online signup, no broker'] },
+    { name:'Chubb Life', plan:'Health Insurance', monthly:120, note:'Health specialist', url:'https://www.chubb.com/nz-en/life.html', features:['No fixed term — cancel anytime','Southern Cross alternative','GP visits, specialists, surgery cover'] },
+    { name:'Southern Cross', plan:'Health Insurance', monthly:140, note:'NZ\'s biggest health insurer', url:'https://www.southerncross.co.nz', local:'NZ not-for-profit', features:['No fixed term — cancel anytime','Not-for-profit — surpluses go back to members','Widest network of hospitals and specialists'] },
+  ]
+};
+
+const AI_TECH = {
+  providers: [
+    { name:'DuckDuckGo', plan:'Free', monthly:0, note:'Private search', url:'https://duckduckgo.com', features:['No ads tracking you across the internet','No search history stored','Works as a browser on mobile too'] },
+    { name:'Proton', plan:'Free', monthly:0, note:'Private email + VPN', url:'https://proton.me', local:'Swiss privacy', features:['No ads, no tracking, encrypted','Free email + calendar + VPN','Swiss privacy laws — strongest in the world'] },
+    { name:'Proton', plan:'Unlimited', monthly:13, note:'Full suite', url:'https://proton.me', local:'Swiss privacy', features:['No ads, no tracking, encrypted','Email + calendar + VPN + cloud storage + password manager','Swiss privacy laws'] },
+    { name:'Claude', plan:'Pro', monthly:30, note:'Anthropic — safety-focused AI', url:'https://claude.ai', features:['No ads, no data selling','Safety-focused AI company','Answers questions, writes, codes, analyses'] },
+    { name:'ChatGPT', plan:'Plus', monthly:30, note:'OpenAI', url:'https://chatgpt.com', features:['No ads','Most widely used AI assistant','Image generation included'] },
+    { name:'ChatGPT', plan:'Free', monthly:0, note:'Basic AI access', url:'https://chatgpt.com', features:['Free with usage limits','Good for occasional questions','Slower during peak times'] },
+    { name:'Notion', plan:'Personal', monthly:0, note:'Notes + planning', url:'https://www.notion.com', features:['Free for personal use','Notes, tasks, databases, wikis','AI features available as add-on'] },
+    { name:'Canva', plan:'Free', monthly:0, note:'Design tool', url:'https://www.canva.com', features:['Free tier covers most needs','Design social posts, presentations, flyers','AI features in paid tier'] },
+    { name:'Canva', plan:'Pro', monthly:20, note:'Full design suite', url:'https://www.canva.com', features:['No watermarks, premium templates','Brand kit, background remover','AI image generation'] },
+  ]
+};
+
+// ─── Tabs ────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById(t.dataset.tab).classList.add('on');
+    window.scrollTo(0, 0);
+  });
+});
+
+// ─── Provider lists ──────────────────────────────────────
+// Spec ranking helpers
+const SPEED_RANK = {'100/20':1,'300/100':2,'900/400':3,'2000/2000':4};
+const DATA_RANK = {'4GB+Endless':1,'6GB':2,'8GB+Carryover':3,'10GB+Endless':4,'500GB/yr':5,'Unlimited':6};
+
+function getSpeedRank(p) { return SPEED_RANK[p.speed] || 0; }
+function getDataRank(p) { return DATA_RANK[p.data] || 0; }
+
+function renderProviders(containerId, providers, priceKey, userSpec) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+
+  const allSorted = [...providers].sort((a,b) => (a[priceKey] || a.monthly) - (b[priceKey] || b.monthly));
+  const absoluteCheapest = allSorted[0];
+
+  // Find best match — same spec or better, cheapest (includes free/freemium)
+  let bestMatch = null;
+  if (userSpec) {
+    const matching = allSorted.filter(p => {
+      if (userSpec.speed) return getSpeedRank(p) >= getSpeedRank(userSpec);
+      if (userSpec.data) return getDataRank(p) >= getDataRank(userSpec);
+      return true;
+    });
+    if (matching.length > 0) bestMatch = matching[0];
+  }
+
+  // Build display: free option (if exists) + best paid + absolute cheapest paid
+  const hasFree = allSorted.length > 0 && (allSorted[0][priceKey] || allSorted[0].monthly) === 0;
+  const paidSorted = allSorted.filter(p => (p[priceKey] || p.monthly) > 0);
+  const bestPaid = paidSorted[0] || null;
+
+  let top = [];
+  let rest = [...allSorted];
+
+  if (hasFree && bestPaid) {
+    if (bestMatch && bestMatch !== allSorted[0] && bestMatch !== bestPaid) {
+      top = [allSorted[0], bestMatch, bestPaid];
+    } else {
+      top = [allSorted[0], bestPaid, paidSorted[1]].filter(Boolean);
+    }
+  } else if (bestMatch && bestMatch !== absoluteCheapest) {
+    top = [bestMatch, absoluteCheapest];
+  } else {
+    top = [absoluteCheapest, allSorted[1]].filter(Boolean);
+  }
+  rest = allSorted.filter(p => !top.includes(p));
+
+  const display = [...top, ...rest];
+  const showCount = top.length;
+
+  display.forEach((p, i) => {
+    const price = priceKey === 'monthlyEstimate' ? p.monthlyEstimate : p.monthly;
+    let badge = '';
+    if (hasFree && i === 0 && price === 0) {
+      badge = '<div class="prov-badge cheapest">Free</div>';
+    } else if (hasFree && i === 1 && price > 0) {
+      badge = '<div class="prov-badge value">Best paid</div>';
+    } else if (i === 0 && bestMatch && bestMatch !== absoluteCheapest && p === bestMatch) {
+      badge = '<div class="prov-badge cheapest">Cheapest &amp; similar</div>';
+    } else if (i === 0) {
+      badge = '<div class="prov-badge cheapest">Cheapest &amp; similar</div>';
+    } else if (i === 1) {
+      badge = '<div class="prov-badge value">Absolute cheapest</div>';
+    }
+    const hidden = i >= showCount ? ' prov-hidden' : '';
+    const features = (p.features || []).map(f => `<div class="prov-feat">${f}</div>`).join('');
+    const planDetail = [p.plan, p.type || '', p.speed ? p.speed+'Mbps' : '', p.data || '', p.forHousehold ? ({duo:'For 2',family:'For families'}[p.forHousehold]||'') : ''].filter(Boolean).join(' · ');
+    const localBadge = p.local ? `<div class="prov-badge local">${p.local}</div>` : '';
+
+    el.innerHTML += `
+      <div class="prov-card${hidden}" data-idx="${i}">
+        ${badge}${localBadge}
+        <div class="prov-top">
+          <div class="prov-left">
+            <div class="prov-name">${p.name}</div>
+            <div class="prov-plan">${planDetail}</div>
+          </div>
+          <div class="prov-price">$${price}<span>/mo</span></div>
+        </div>
+        <div class="prov-features">
+          ${features}
+          <a class="prov-link" href="${p.url}" target="_blank" rel="noopener">View plans ↗</a>
+        </div>
+      </div>`;
+  });
+
+  if (display.length > 2) {
+    el.innerHTML += `<div class="see-all" data-list="${containerId}">See all ${display.length} options</div>`;
+  }
+
+  el.querySelectorAll('.prov-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.prov-link')) return;
+      card.classList.toggle('open');
+    });
+  });
+
+  const seeAll = el.querySelector('.see-all');
+  if (seeAll) {
+    seeAll.addEventListener('click', () => {
+      const hidden = el.querySelectorAll('.prov-hidden');
+      const showing = hidden.length && hidden[0].classList.contains('show');
+      hidden.forEach(h => h.classList.toggle('show'));
+      seeAll.textContent = showing ? `See all ${display.length} options` : 'Show less';
+    });
+  }
+}
+
+// Get user's current specs from What I Pay selections
+function getUserSpecs() {
+  const bbProvider = document.getElementById('wip-bb').value;
+  const bbAmt = parseFloat(document.getElementById('wip-bb-amt').value) || 0;
+  let bbSpec = null;
+  if (bbProvider && bbAmt) {
+    const tiers = BB_TIERS.filter(t => t.name === bbProvider);
+    if (tiers.length) {
+      const match = tiers.reduce((best, t) => Math.abs(t.monthly - bbAmt) < Math.abs(best.monthly - bbAmt) ? t : best);
+      if (Math.abs(match.monthly - bbAmt) <= 10) bbSpec = { speed: match.speed.split(' ')[0] };
+    }
+  }
+
+  // Mobile — find the best data tier the user has
+  let mobSpec = null;
+  const mobSelects = document.querySelectorAll('.wip-mob-select');
+  const mobAmts = document.querySelectorAll('.wip-mob-amt');
+  let bestDataRank = 0;
+  mobSelects.forEach((sel, i) => {
+    if (sel.value) {
+      const amt = parseFloat(mobAmts[i]?.value) || 0;
+      const match = MOBILE.providers.find(p => p.name === sel.value && Math.abs(p.monthly - amt) < 10);
+      if (match && getDataRank(match) > bestDataRank) {
+        bestDataRank = getDataRank(match);
+        mobSpec = { data: match.data };
+      }
+    }
+  });
+
+  return { bb: bbSpec, mobile: mobSpec };
+}
+
+function renderAllProviders() {
+  const specs = getUserSpecs();
+  renderProviders('power-list', POWER.providers, 'monthlyEstimate');
+  renderProviders('gas-list', GAS.providers, 'monthly');
+  renderProviders('broadband-list', BROADBAND.providers, 'monthly', specs.bb);
+  renderProviders('mobile-list', MOBILE.providers, 'monthly', specs.mobile);
+  renderProviders('streaming-list', STREAMING.providers, 'monthly');
+  renderProviders('music-list', MUSIC.providers, 'monthly');
+  renderProviders('insurance-list', INSURANCE.providers, 'monthly');
+  renderProviders('ai-list', AI_TECH.providers, 'monthly');
+}
+renderAllProviders();
+
+// ─── Household state ────────────────────────────────────
+let adults = 2, kids = 0;
+
+function getAdults() { return 2; }
+function getKids() { return 0; }
+
+// ─── Dynamic mobile slots ───────────────────────────────
+const mobileProviderNames = ['Skinny','Warehouse Mobile','One NZ','2degrees','Spark','Kogan Mobile','Mighty Mobile','Other'];
+
+function buildMobileSlots() {
+  adults = getAdults();
+  const section = document.getElementById('wip-mobile-section');
+  const existing = Array.from(section.querySelectorAll('.wip-row')).map(row => ({
+    provider: row.querySelector('.wip-mob-select')?.value || '',
+    amount: row.querySelector('.wip-mob-amt')?.value || ''
+  }));
+  section.innerHTML = '';
+  for (let i = 0; i < adults; i++) {
+    const row = document.createElement('div');
+    row.className = 'wip-row';
+    row.dataset.mobile = i;
+    row.innerHTML = `
+      <select class="wip-select wip-mob-select"><option value="">Phone ${i+1}</option></select>
+      <div class="wip-amount-wrap"><input class="wip-amount wip-mob-amt" type="number" placeholder="p/m"></div>`;
+    section.appendChild(row);
+    const sel = row.querySelector('.wip-mob-select');
+    fillSelectEl(sel, mobileProviderNames);
+    if (existing[i]) {
+      sel.value = existing[i].provider;
+      if (existing[i].amount) row.querySelector('.wip-mob-amt').value = existing[i].amount;
+    }
+    sel.addEventListener('change', function() {
+      const amt = row.querySelector('.wip-mob-amt');
+      const match = MOBILE.providers.find(p => p.name === this.value);
+      if (match && !amt.value) amt.value = match.monthly;
+      recalcTotals();
+    });
+    row.querySelector('.wip-mob-amt').addEventListener('input', recalcTotals);
+  }
+  // Add phone button
+  const btn = document.createElement('button');
+  btn.className = 'wip-add';
+  btn.textContent = '+ Phone';
+  btn.addEventListener('click', () => {
+    const idx = section.querySelectorAll('.wip-row').length;
+    const row = document.createElement('div');
+    row.className = 'wip-row';
+    row.dataset.mobile = idx;
+    row.innerHTML = `
+      <select class="wip-select wip-mob-select"><option value="">Phone ${idx+1}</option></select>
+      <div class="wip-amount-wrap"><input class="wip-amount wip-mob-amt" type="number" placeholder="p/m"></div>
+      <button class="wip-remove" title="Remove">×</button>`;
+    section.insertBefore(row, btn);
+    const sel = row.querySelector('.wip-mob-select');
+    fillSelectEl(sel, mobileProviderNames);
+    sel.addEventListener('change', function() {
+      const amt = row.querySelector('.wip-mob-amt');
+      const match = MOBILE.providers.find(p => p.name === this.value);
+      if (match && !amt.value) amt.value = match.monthly;
+      recalcTotals();
+    });
+    row.querySelector('.wip-mob-amt').addEventListener('input', recalcTotals);
+    row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
+  });
+  section.appendChild(btn);
+  recalcTotals();
+}
+
+function updateHHSummary() { /* removed */ }
+
+// ─── Populate dropdowns ─────────────────────────────────
+const powerProviderNames = ['Contact Energy','Electric Kiwi','Mercury','Genesis','Meridian','Pulse','Nova','Trustpower','Other'];
+const bbProviderNames = ['Skinny','2degrees','Spark','One NZ','Now','Orcon','Slingshot','Trustpower','Other'];
+const streamServiceNames = ['Netflix','Disney+','Neon','Apple TV+','Prime Video','YouTube Premium','Paramount+','Other'];
+const musicServiceNames = ['Spotify','Apple Music','YouTube Music','YouTube Premium','Tidal','Other'];
+
+function fillSelect(selectId, options) {
+  const sel = document.getElementById(selectId);
+  options.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; sel.appendChild(opt); });
+}
+
+function fillSelectEl(sel, options) {
+  options.forEach(o => { const opt = document.createElement('option'); opt.value = o; opt.textContent = o; sel.appendChild(opt); });
+}
+
+fillSelect('wip-power', powerProviderNames);
+fillSelect('wip-bb', bbProviderNames);
+
+// Gas + Solar
+const gasProviderNames = ['Genesis','Contact Energy','Mercury','Nova','Other'];
+const solarProviderNames = ['Contact Energy','Mercury','Meridian','Electric Kiwi','Genesis','Other'];
+fillSelect('wip-gas', gasProviderNames);
+fillSelect('wip-solar-provider', solarProviderNames);
+
+// Toggle gas/solar rows
+document.getElementById('wip-add-gas').addEventListener('click', () => {
+  document.getElementById('wip-gas-row').style.display = 'flex';
+  document.getElementById('wip-add-gas').style.display = 'none';
+});
+document.getElementById('wip-gas-remove').addEventListener('click', () => {
+  document.getElementById('wip-gas-row').style.display = 'none';
+  document.getElementById('wip-gas').value = '';
+  document.getElementById('wip-gas-amt').value = '';
+  document.getElementById('wip-add-gas').style.display = '';
+  recalcTotals();
+});
+document.getElementById('wip-add-solar').addEventListener('click', () => {
+  document.getElementById('wip-solar-row').style.display = 'flex';
+  document.getElementById('wip-add-solar').style.display = 'none';
+});
+document.getElementById('wip-gas-amt').addEventListener('input', recalcTotals);
+document.getElementById('wip-solar-amt').addEventListener('input', recalcTotals);
+
+// Insurance
+const insTypes = ['Home','Car','Contents','Income Protection','Health','Life','Travel','Other'];
+const aiServices = ['Claude','ChatGPT','Notion','Canva','Proton','Microsoft 365','Google One','iCloud+','Other'];
+fillSelectEl(document.querySelector('.wip-ins-select'), insTypes);
+fillSelectEl(document.querySelector('.wip-ai-select'), aiServices);
+document.querySelector('.wip-ins-amt').addEventListener('input', recalcTotals);
+document.querySelector('.wip-ai-amt').addEventListener('input', recalcTotals);
+
+let insCount = 1;
+document.getElementById('wip-add-ins').addEventListener('click', () => {
+  const section = document.getElementById('wip-insurance-section');
+  const btn = document.getElementById('wip-add-ins');
+  const row = document.createElement('div');
+  row.className = 'wip-row';
+  row.dataset.ins = insCount++;
+  row.innerHTML = `
+    <select class="wip-select wip-ins-select"><option value="">Choose type</option></select>
+    <div class="wip-amount-wrap"><input class="wip-amount wip-ins-amt" type="number" placeholder="p/m"></div>
+    <button class="wip-remove" title="Remove">×</button>`;
+  section.insertBefore(row, btn);
+  fillSelectEl(row.querySelector('.wip-ins-select'), insTypes);
+  row.querySelector('.wip-ins-amt').addEventListener('input', recalcTotals);
+  row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
+});
+
+let aiCount = 1;
+document.getElementById('wip-add-ai').addEventListener('click', () => {
+  const section = document.getElementById('wip-ai-section');
+  const btn = document.getElementById('wip-add-ai');
+  const row = document.createElement('div');
+  row.className = 'wip-row';
+  row.dataset.ai = aiCount++;
+  row.innerHTML = `
+    <select class="wip-select wip-ai-select"><option value="">Choose a service</option></select>
+    <div class="wip-amount-wrap"><input class="wip-amount wip-ai-amt" type="number" placeholder="p/m"></div>
+    <button class="wip-remove" title="Remove">×</button>`;
+  section.insertBefore(row, btn);
+  fillSelectEl(row.querySelector('.wip-ai-select'), aiServices);
+  row.querySelector('.wip-ai-amt').addEventListener('input', recalcTotals);
+  row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
+});
+
+function autoFillPrice(selectEl, amountEl, providers, priceKey) {
+  selectEl.addEventListener('change', () => {
+    const match = providers.find(p => p.name === selectEl.value);
+    if (match && !amountEl.value) amountEl.value = match[priceKey];
+    recalcTotals();
+  });
+  amountEl.addEventListener('input', recalcTotals);
+}
+
+autoFillPrice(document.getElementById('wip-power'), document.getElementById('wip-power-amt'), POWER.providers, 'monthlyEstimate');
+autoFillPrice(document.getElementById('wip-bb'), document.getElementById('wip-bb-amt'), BROADBAND.providers, 'monthly');
+
+// Broadband plan detection
+function detectBBPlan() {
+  const provider = document.getElementById('wip-bb').value;
+  const amount = parseFloat(document.getElementById('wip-bb-amt').value) || 0;
+  const detectEl = document.getElementById('bb-detect');
+  const altsEl = document.getElementById('bb-alts');
+
+  if (!provider || !amount) {
+    detectEl.style.display = 'none';
+    altsEl.style.display = 'none';
+    return;
+  }
+
+  // Find closest matching tier for this provider
+  const providerTiers = BB_TIERS.filter(t => t.name === provider);
+  let matched = null;
+  if (providerTiers.length) {
+    matched = providerTiers.reduce((best, t) =>
+      Math.abs(t.monthly - amount) < Math.abs(best.monthly - amount) ? t : best
+    );
+    // Only match if within $10
+    if (Math.abs(matched.monthly - amount) > 10) matched = null;
+  }
+
+  if (matched) {
+    detectEl.style.display = 'block';
+    detectEl.innerHTML = `Looks like <span>${matched.plan}</span> · ${matched.speed}`;
+
+    // Find alternatives that match or beat the speed at a lower price
+    const speedRank = {'100/20 Mbps':1,'4G/5G':1.5,'300/100 Mbps':2,'HFC 600+':2.5,'900/400 Mbps':3,'2000/2000 Mbps':4};
+    const myRank = speedRank[matched.speed] || 1;
+    const alts = BB_TIERS
+      .filter(t => t.name !== provider && (speedRank[t.speed] || 1) >= myRank && t.monthly < amount)
+      .sort((a, b) => a.monthly - b.monthly)
+      .slice(0, 3);
+
+    if (alts.length) {
+      altsEl.style.display = 'block';
+      altsEl.innerHTML = '<div style="font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#2D7A4F;padding:6px 0 2px;">Same speed or faster, less money</div>' +
+        alts.map(a => `
+          <div class="plan-alt">
+            <div class="alt-left"><strong>${a.name}</strong> ${a.plan} · ${a.speed}</div>
+            <div class="alt-save">$${a.monthly}/mo · save $${Math.round(amount - a.monthly)}</div>
+          </div>`).join('');
+    } else {
+      altsEl.style.display = 'none';
+    }
+  } else {
+    detectEl.style.display = 'none';
+    altsEl.style.display = 'none';
+  }
+}
+
+document.getElementById('wip-bb').addEventListener('change', detectBBPlan);
+document.getElementById('wip-bb-amt').addEventListener('input', detectBBPlan);
+
+// Streaming
+document.querySelectorAll('.wip-stream-select').forEach(sel => fillSelectEl(sel, streamServiceNames));
+document.querySelector('.wip-stream-select').addEventListener('change', function() {
+  const amt = this.closest('.wip-row').querySelector('.wip-stream-amt');
+  const match = STREAMING.providers.find(p => p.name === this.value);
+  if (match && !amt.value) amt.value = match.monthly;
+  recalcTotals();
+});
+document.querySelector('.wip-stream-amt').addEventListener('input', recalcTotals);
+
+let streamCount = 1;
+document.getElementById('wip-add-stream').addEventListener('click', () => {
+  const section = document.getElementById('wip-streaming-section');
+  const btn = document.getElementById('wip-add-stream');
+  const row = document.createElement('div');
+  row.className = 'wip-row';
+  row.dataset.stream = streamCount++;
+  row.innerHTML = `
+    <select class="wip-select wip-stream-select"><option value="">Choose a service</option></select>
+    <div class="wip-amount-wrap"><input class="wip-amount wip-stream-amt" type="number" placeholder="p/m"></div>
+    <button class="wip-remove" title="Remove">×</button>`;
+  section.insertBefore(row, btn);
+  const sel = row.querySelector('.wip-stream-select');
+  fillSelectEl(sel, streamServiceNames);
+  sel.addEventListener('change', function() {
+    const amt = row.querySelector('.wip-stream-amt');
+    const match = STREAMING.providers.find(p => p.name === this.value);
+    if (match && !amt.value) amt.value = match.monthly;
+    recalcTotals();
+  });
+  row.querySelector('.wip-stream-amt').addEventListener('input', recalcTotals);
+  row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
+});
+
+// Music
+document.querySelectorAll('.wip-music-select').forEach(sel => fillSelectEl(sel, musicServiceNames));
+document.querySelector('.wip-music-select').addEventListener('change', function() {
+  const amt = this.closest('.wip-row').querySelector('.wip-music-amt');
+  const match = MUSIC.providers.find(p => p.name === this.value);
+  if (match && !amt.value) amt.value = match.monthly;
+  recalcTotals();
+});
+document.querySelector('.wip-music-amt').addEventListener('input', recalcTotals);
+
+let musicCount = 1;
+document.getElementById('wip-add-music').addEventListener('click', () => {
+  const section = document.getElementById('wip-music-section');
+  const btn = document.getElementById('wip-add-music');
+  const row = document.createElement('div');
+  row.className = 'wip-row';
+  row.dataset.music = musicCount++;
+  row.innerHTML = `
+    <select class="wip-select wip-music-select"><option value="">Choose a service</option></select>
+    <div class="wip-amount-wrap"><input class="wip-amount wip-music-amt" type="number" placeholder="p/m"></div>
+    <button class="wip-remove" title="Remove">×</button>`;
+  section.insertBefore(row, btn);
+  const sel = row.querySelector('.wip-music-select');
+  fillSelectEl(sel, musicServiceNames);
+  sel.addEventListener('change', function() {
+    const amt = row.querySelector('.wip-music-amt');
+    const match = MUSIC.providers.find(p => p.name === this.value);
+    if (match && !amt.value) amt.value = match.monthly;
+    recalcTotals();
+  });
+  row.querySelector('.wip-music-amt').addEventListener('input', recalcTotals);
+  row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
+});
+
+// ─── Recalculate totals ─────────────────────────────────
+function recalcTotals() {
+  const power = parseFloat(document.getElementById('wip-power-amt').value) || 0;
+  const gas = parseFloat(document.getElementById('wip-gas-amt').value) || 0;
+  const solarCredit = parseFloat(document.getElementById('wip-solar-amt').value) || 0;
+  const bb = parseFloat(document.getElementById('wip-bb-amt').value) || 0;
+  let mobileTotal = 0;
+  document.querySelectorAll('.wip-mob-amt').forEach(el => { mobileTotal += parseFloat(el.value) || 0; });
+  let streaming = 0;
+  document.querySelectorAll('.wip-stream-amt').forEach(el => { streaming += parseFloat(el.value) || 0; });
+  let musicTotal = 0;
+  document.querySelectorAll('.wip-music-amt').forEach(el => { musicTotal += parseFloat(el.value) || 0; });
+  let insTotal = 0;
+  document.querySelectorAll('.wip-ins-amt').forEach(el => { insTotal += parseFloat(el.value) || 0; });
+  let aiTotal = 0;
+  document.querySelectorAll('.wip-ai-amt').forEach(el => { aiTotal += parseFloat(el.value) || 0; });
+
+  const numPhones = document.querySelectorAll('.wip-mob-amt').length;
+  const energy = power + gas - solarCredit;
+  const currentTotal = energy + bb + mobileTotal + streaming + musicTotal + insTotal + aiTotal;
+  const totalsEl = document.getElementById('wip-totals');
+  const shareBtn = document.getElementById('share-btn');
+
+  if (currentTotal > 0) {
+    totalsEl.style.display = 'block';
+    shareBtn.style.display = 'block';
+    document.getElementById('wip-current-total').textContent = `$${currentTotal.toFixed(0)}/mo`;
+
+    const bestPowerP = [...POWER.providers].sort((a,b) => a.monthlyEstimate - b.monthlyEstimate)[0];
+    const bestBBP = [...BROADBAND.providers].sort((a,b) => a.monthly - b.monthly)[0];
+    const bestMobileP = [...MOBILE.providers].sort((a,b) => a.monthly - b.monthly)[0];
+    const bestTotal = bestPowerP.monthlyEstimate + bestBBP.monthly + (bestMobileP.monthly * numPhones);
+    // Music + streaming best = Spotify Free + TVNZ+ = $0
+
+    document.getElementById('wip-best-total').textContent = `$${bestTotal}/mo`;
+
+    const diff = currentTotal - bestTotal;
+    const pctOver = bestTotal > 0 ? ((diff / bestTotal) * 100) : 0;
+    const gradeEl = document.getElementById('score-grade');
+    const msgEl = document.getElementById('score-msg');
+
+    // Grade — percentage over cheapest
+    const pctRound = Math.round(pctOver);
+    if (pctOver <= 5) {
+      gradeEl.textContent = 'Ka pai';
+      gradeEl.className = 'score-grade good';
+      msgEl.textContent = "You're getting a good deal. Not much to change.";
+    } else {
+      gradeEl.innerHTML = `YOU'RE PAYING <span style="font-size:52px;">${pctRound}%</span> MORE`;
+      gradeEl.className = 'score-grade ' + (pctOver <= 15 ? 'ok' : 'high');
+      msgEl.textContent = 'Here are better options below.';
+    }
+
+    const savingsTotal = document.getElementById('savings-total');
+    if (diff > 0) {
+      document.getElementById('wip-diff').textContent = `$${diff.toFixed(0)}`;
+      document.getElementById('wip-annual-amt').textContent = `$${(diff * 12).toFixed(0)}/year`;
+      document.getElementById('wip-best-total').textContent = `$${bestTotal}/mo`;
+      savingsTotal.style.display = 'block';
+    } else {
+      savingsTotal.style.display = 'none';
+    }
+
+    // Build best picks per category
+    const picksEl = document.getElementById('best-picks');
+    const bbProvider = document.getElementById('wip-bb').value;
+    const bbAmt = parseFloat(document.getElementById('wip-bb-amt').value) || 0;
+    // Detect current BB plan for spec comparison
+    let currentBBTier = null;
+    if (bbProvider && bbAmt) {
+      const provTiers = BB_TIERS.filter(t => t.name === bbProvider);
+      if (provTiers.length) {
+        currentBBTier = provTiers.reduce((best, t) => Math.abs(t.monthly - bbAmt) < Math.abs(best.monthly - bbAmt) ? t : best);
+        if (Math.abs(currentBBTier.monthly - bbAmt) > 10) currentBBTier = null;
+      }
+    }
+    // Current mobile — average per phone
+    const mobAvg = numPhones > 0 ? mobileTotal / numPhones : 0;
+    let currentMobPlan = null;
+    if (mobAvg > 0) {
+      currentMobPlan = [...MOBILE.providers].reduce((best, p) => Math.abs(p.monthly - mobAvg) < Math.abs(best.monthly - mobAvg) ? p : best);
+    }
+
+    const bestStreamP = STREAMING.providers.find(p => p.pick) || STREAMING.providers[0];
+    const bestMusicP = MUSIC.providers.find(p => p.pick) || MUSIC.providers[0];
+    // Pick music plan based on number of phones (= people)
+    let bestMusicForHH;
+    if (numPhones >= 3) {
+      bestMusicForHH = MUSIC.providers.find(p => p.forHousehold === 'family') || MUSIC.providers.find(p => p.monthly > 0);
+    } else if (numPhones === 2) {
+      bestMusicForHH = MUSIC.providers.find(p => p.forHousehold === 'duo') || MUSIC.providers.filter(p => p.monthly > 0 && !p.forHousehold).sort((a,b) => a.monthly - b.monthly)[0];
+    } else {
+      bestMusicForHH = MUSIC.providers.filter(p => p.monthly > 0 && !p.forHousehold).sort((a,b) => a.monthly - b.monthly)[0];
+    }
+
+    const switchSteps = {
+      Power: ['Find your ICP number on your power bill (starts with a 0)','Sign up with the new provider online — they only need your ICP and address','Your new provider handles the switch — you don\'t need to cancel the old one','Takes about 2–3 business days, power stays on the whole time'],
+      Internet: ['Check your current contract — if you\'re on no fixed term you can switch anytime','Sign up with the new provider online — they need your address','They\'ll arrange the connection, usually takes 5–7 days','Your old provider cancels automatically when the new one connects'],
+      Mobile: ['If prepay: just buy a new SIM or eSIM from the new provider','Port your number — the new provider handles this when you sign up','Takes a few hours, your phone switches over automatically','If contract: check your end date, you may need to pay out the remaining term'],
+      Stream: ['Cancel your current subscription in the app or account settings','Sign up with the new service — most have a free trial','Set a calendar reminder before the trial ends so you don\'t forget'],
+      Music: ['Cancel your current subscription in the app or account settings','Sign up with the new service — download the app first','Your playlists won\'t transfer, but you can rebuild over time'],
+    };
+
+    function pickRow(cat, provider, priceText, current) {
+      const steps = (switchSteps[cat] || []).map((s,i) => `<div class="pick-step"><span class="step-num">${i+1}</span>${s}</div>`).join('');
+      const stepsBlock = steps ? `<div class="switch-steps"><div class="switch-lbl">How to switch</div>${steps}</div>` : '';
+      const link = provider.url ? `<a class="pick-link" href="${provider.url}" target="_blank" rel="noopener">Sign up with ${provider.name} ↗</a>` : '';
+
+      // Comparison table
+      let compareHTML = '';
+      if (current && current.name) {
+        const rows = [];
+        rows.push(['Provider', current.name, provider.name]);
+        if (current.plan || provider.plan) rows.push(['Plan', current.plan || '—', provider.plan || '—']);
+        if (current.type || provider.type) rows.push(['Type', current.type || '—', provider.type || '—']);
+        if (current.data || provider.data) rows.push(['Data', current.data || '—', provider.data || '—']);
+        if (current.speed || provider.speed) rows.push(['Speed', (current.speed||'—')+'', (provider.speed||'—')+'']);
+        const curPrice = current.monthlyEstimate || current.monthly || 0;
+        const newPrice = provider.monthlyEstimate || provider.monthly || 0;
+        rows.push(['Monthly', '$'+curPrice, '$'+newPrice]);
+        compareHTML = `<table class="pick-compare">
+          <tr><th></th><th class="old">Now</th><th>Switch to</th></tr>
+          ${rows.map(r => `<tr><td>${r[0]}</td><td class="old">${r[1]}</td><td>${r[2]}</td></tr>`).join('')}
+        </table>`;
+      }
+
+      return `<div class="pick-row">
+        <div class="pick-top">
+          <div class="pick-cat">${cat}</div>
+          <div class="pick-name">${provider.name} <span>${provider.plan}</span></div>
+          <div class="pick-price">${priceText}</div>
+        </div>
+        <div class="pick-details">${compareHTML}${stepsBlock}${link}</div>
+      </div>`;
+    }
+
+    let picksHTML = '<div class="picks-list">';
+
+    // Power
+    const powerAmt = parseFloat(document.getElementById('wip-power-amt').value) || 0;
+    const powerProvider = document.getElementById('wip-power').value;
+    if (powerAmt > 0) {
+      const savePower = powerAmt - bestPowerP.monthlyEstimate;
+      const curPower = POWER.providers.find(p => p.name === powerProvider) || { name: powerProvider || 'Current', monthlyEstimate: powerAmt };
+      picksHTML += pickRow('Power', bestPowerP, savePower > 0 ? '-$'+Math.round(savePower) : 'Same', curPower);
+    }
+
+    // Broadband
+    if (bbAmt > 0) {
+      const saveBB = bbAmt - bestBBP.monthly;
+      const curBB = currentBBTier ? { name: bbProvider, plan: currentBBTier.plan, speed: currentBBTier.speed.split(' ')[0], monthly: bbAmt } : { name: bbProvider || 'Current', monthly: bbAmt };
+      picksHTML += pickRow('Internet', bestBBP, saveBB > 0 ? '-$'+Math.round(saveBB) : 'Same', curBB);
+    }
+
+    // Mobile
+    if (mobileTotal > 0) {
+      const saveMob = mobileTotal - (bestMobileP.monthly * numPhones);
+      const mobSelects = document.querySelectorAll('.wip-mob-select');
+      const firstMobName = mobSelects[0]?.value || 'Current';
+      const curMob = MOBILE.providers.find(p => p.name === firstMobName) || { name: firstMobName, monthly: Math.round(mobileTotal/numPhones) };
+      const curMobDisplay = { ...curMob, name: curMob.name + (numPhones > 1 ? ' ×'+numPhones : ''), monthly: mobileTotal };
+      const mobDisplay = {...bestMobileP, name: bestMobileP.name + ' ×' + numPhones, monthly: bestMobileP.monthly * numPhones};
+      picksHTML += pickRow('Mobile', mobDisplay, saveMob > 0 ? '-$'+Math.round(saveMob) : 'Same', curMobDisplay);
+    }
+
+    // Streaming
+    if (streaming > 0) {
+      const paidStream = STREAMING.providers.filter(p => p.monthly > 0).sort((a,b) => a.monthly - b.monthly)[0];
+      if (paidStream) {
+        const saveStream = streaming - paidStream.monthly;
+        const streamSelects = document.querySelectorAll('.wip-stream-select');
+        const firstStreamName = streamSelects[0]?.value || 'Current';
+        const curStream = { name: firstStreamName, monthly: streaming };
+        picksHTML += pickRow('Stream', paidStream, saveStream > 0 ? '-$'+Math.round(saveStream) : '$'+paidStream.monthly+'/mo', curStream);
+      }
+    }
+
+    // Music
+    if (musicTotal > 0 && bestMusicForHH) {
+      const saveMusic = musicTotal - bestMusicForHH.monthly;
+      const musicSelects = document.querySelectorAll('.wip-music-select');
+      const firstMusicName = musicSelects[0]?.value || 'Current';
+      const curMusic = { name: firstMusicName, monthly: musicTotal };
+      picksHTML += pickRow('Music', bestMusicForHH, saveMusic > 0 ? '-$'+Math.round(saveMusic) : '$'+bestMusicForHH.monthly+'/mo', curMusic);
+    }
+
+
+    picksHTML += '</div>';
+    picksEl.innerHTML = picksHTML;
+    picksEl.style.display = 'block';
+    document.getElementById('picks-header').style.display = 'flex';
+    document.getElementById('tap-hint').style.display = 'block';
+
+    // Click to expand pick details
+    picksEl.querySelectorAll('.pick-row').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('.pick-link')) return;
+        row.classList.toggle('open');
+      });
+    });
+
+    // Hide gas section if user didn't add gas
+    const gasAmt = parseFloat(document.getElementById('wip-gas-amt').value) || 0;
+    document.getElementById('gas-lbl').style.display = gasAmt > 0 ? '' : 'none';
+    document.getElementById('gas-list').style.display = gasAmt > 0 ? '' : 'none';
+
+  } else {
+    totalsEl.style.display = 'none';
+    shareBtn.style.display = 'none';
+    document.getElementById('best-picks').style.display = 'none';
+    document.getElementById('picks-header').style.display = 'none';
+  }
+
+  // Save to localStorage
+  localStorage.setItem('wip', JSON.stringify({
+    adults: getAdults(),
+    kids: getKids(),
+    power: { provider: document.getElementById('wip-power').value, amount: power },
+    bb: { provider: document.getElementById('wip-bb').value, amount: bb },
+    mobiles: Array.from(document.querySelectorAll('.wip-row[data-mobile]')).map(row => ({
+      provider: row.querySelector('.wip-mob-select')?.value || '',
+      amount: parseFloat(row.querySelector('.wip-mob-amt')?.value) || 0
+    })),
+    streaming: Array.from(document.querySelectorAll('.wip-row[data-stream]')).map(row => ({
+      service: row.querySelector('.wip-stream-select')?.value || '',
+      amount: parseFloat(row.querySelector('.wip-stream-amt')?.value) || 0
+    })),
+    music: Array.from(document.querySelectorAll('.wip-row[data-music]')).map(row => ({
+      service: row.querySelector('.wip-music-select')?.value || '',
+      amount: parseFloat(row.querySelector('.wip-music-amt')?.value) || 0
+    }))
+  }));
+}
+
+// ─── Dynamic bundles ────────────────────────────────────
+function rebuildBundles() { /* removed */ }
+
+// ─── Restore from localStorage ──────────────────────────
+try {
+  const saved = JSON.parse(localStorage.getItem('wip'));
+  if (saved) {
+    // adults/kids picker removed — defaults to 2 phones
+    if (saved.power) { document.getElementById('wip-power').value = saved.power.provider; if (saved.power.amount) document.getElementById('wip-power-amt').value = saved.power.amount; }
+    if (saved.bb) { document.getElementById('wip-bb').value = saved.bb.provider; if (saved.bb.amount) document.getElementById('wip-bb-amt').value = saved.bb.amount; }
+    // Build mobile slots first, then restore values
+    buildMobileSlots();
+    if (saved.mobiles) {
+      const rows = document.querySelectorAll('.wip-row[data-mobile]');
+      saved.mobiles.forEach((m, i) => {
+        if (rows[i]) {
+          rows[i].querySelector('.wip-mob-select').value = m.provider;
+          if (m.amount) rows[i].querySelector('.wip-mob-amt').value = m.amount;
+        }
+      });
+    }
+    if (saved.streaming && saved.streaming.length) {
+      const first = saved.streaming[0];
+      document.querySelector('.wip-stream-select').value = first.service;
+      if (first.amount) document.querySelector('.wip-stream-amt').value = first.amount;
+      for (let i = 1; i < saved.streaming.length; i++) {
+        document.getElementById('wip-add-stream').click();
+        const rows = document.querySelectorAll('.wip-row[data-stream]');
+        const row = rows[rows.length - 1];
+        row.querySelector('.wip-stream-select').value = saved.streaming[i].service;
+        if (saved.streaming[i].amount) row.querySelector('.wip-stream-amt').value = saved.streaming[i].amount;
+      }
+    }
+    if (saved.music && saved.music.length) {
+      const first = saved.music[0];
+      document.querySelector('.wip-music-select').value = first.service;
+      if (first.amount) document.querySelector('.wip-music-amt').value = first.amount;
+      for (let i = 1; i < saved.music.length; i++) {
+        document.getElementById('wip-add-music').click();
+        const rows = document.querySelectorAll('.wip-row[data-music]');
+        const row = rows[rows.length - 1];
+        row.querySelector('.wip-music-select').value = saved.music[i].service;
+        if (saved.music[i].amount) row.querySelector('.wip-music-amt').value = saved.music[i].amount;
+      }
+    }
+    recalcTotals();
+  } else {
+    buildMobileSlots();
+  }
+} catch { buildMobileSlots(); }
+
+rebuildBundles();
+updateHHSummary();
+
+// ─── Weekly Tips ─────────────────────────────────────────
+const TIPS = [
+  { title:'Ring your power company and say you want to leave', intro:'Saves $300–500 a year for a 10-minute phone call.', bullets:['Say you\'re thinking about switching — they\'ll transfer you to retention','Retention can offer 15–25% off your rates on the spot','Have a competitor\'s quote open so you can name a price'], author:'NZ Electricity Authority', source:'Powerswitch savings data' },
+  { title:'Annual phone plans cost way less than monthly', intro:'Paying upfront for a year saves $150–200 per phone.', bullets:['Several providers offer 365-day prepay plans at a big discount','The effective monthly cost drops 30–40% compared to rolling monthly','Set a calendar reminder 2 weeks before expiry so you don\'t lapse'], author:'Consumer NZ', source:'Mobile plan comparison 2025' },
+  { title:'Only pay for one streaming service at a time', intro:'Rotate services instead of stacking them.', bullets:['Netflix for 2 months, cancel, Disney+ for 1, then Neon','Spend ~$12/month average instead of $40','Most people only properly watch one service per week anyway'], author:'Deloitte', source:'Digital Media Trends, 2024' },
+  { title:'Put your hot water on a timer', intro:'Your cylinder is probably 30% of your power bill.', bullets:['Get an electrician to install a timer — costs about $150','Set it to heat at 5am and 4pm only','If your plan has a free power window, heat the cylinder then'], author:'EECA', source:'eeca.govt.nz/energywise' },
+  { title:'Wait 72 hours before buying anything over $50', intro:'Kills 60–70% of impulse purchases.', bullets:['After three days you usually realise you don\'t actually want it','Not about whether you can afford it — it\'s about whether you care','Most families keep a couple of thousand a year from this alone'], author:'Dan Ariely', source:'Predictably Irrational' },
+  { title:'Auto-transfer $20 on payday', intro:'Money you never see, you never miss.', bullets:['Set up an auto-transfer to a separate account the day you get paid','End of year that\'s $1,040 — enough for Christmas or a car repair','Richard Thaler won a Nobel Prize for proving this works'], author:'Richard Thaler', source:'Nudge' },
+  { title:'Your library card is worth $50/month', intro:'Free ebooks, movies, newspapers, and documentaries.', bullets:['Libby — ebooks and audiobooks, same as Audible','Beamafilm — NZ and international films','PressReader — every major newspaper and magazine'], author:'Wellington City Libraries', source:'Wellington City Libraries' },
+  { title:'Bundle your broadband and mobile', intro:'$5–10/month off just for having the same provider.', bullets:['Spark, One NZ, and 2degrees all offer automatic bundle discounts','Two phones = up to $240/year saved','If you\'re already with the same provider on separate accounts, ring and merge them'], author:'Consumer NZ', source:'Bundle comparison' },
+  { title:'Check your Community Services Card eligibility', intro:'Over a million Kiwis qualify but don\'t apply.', bullets:['Cheaper GP visits ($19.50 vs $50+) and $5 prescriptions','Some power companies offer lower rates with a CSC','Family of 4 earning under $56,000 qualifies — apply at workandincome.govt.nz'], author:'Ministry of Social Development', source:'workandincome.govt.nz' },
+  { title:'Double dinner and freeze half', intro:'Spend 23% less on food and stop ordering Uber Eats.', bullets:['Cook double of whatever you\'re making tonight, freeze the extra','Otago Uni found this cuts food waste by 40%','The real win: no more $40 takeaways on tired weeknights'], author:'University of Otago', source:'NZ Food Cost Survey' },
+  { title:'Use Powerswitch every February', intro:'Government-run, free, no sales pitch.', bullets:['Enter your address and actual usage from your bill — takes 5 minutes','Average household that switches saves $200–300/year','February is the time — before winter rates get locked in'], author:'Electricity Authority NZ', source:'powerswitch.org.nz' },
+  { title:'Push back on your next rent increase', intro:'Good tenants have more leverage than they think.', bullets:['Pull up 3–5 similar TradeMe listings in your area','Landlords know a vacancy costs 4–6 weeks rent plus fees','Even $10/week off saves $520/year'], author:'Tenancy Services NZ', source:'tenancy.govt.nz' },
+  { title:'Run a speed test before upgrading broadband', intro:'You might be paying for speed your router can\'t deliver.', bullets:['Go to speedtest.net — if you\'re getting 95/20 on a 300/100 plan, it\'s the router','A $60 router from PB Tech often fixes it','Most families do fine on 100/20 fibre — downgrading saves $10–20/month'], author:'Measuring Broadband NZ', source:'measuringbroadbandnewzealand.com' },
+  { title:'Free kid activities are often better', intro:'Unstructured outdoor play rates higher than paid activities.', bullets:['Council holiday programmes, library storytime, Sport NZ Play.sport — all free','Regional parks run guided walks most weekends','Auckland Uni research: kids prefer free unstructured play over paid structured activities'], author:'University of Auckland', source:'NZ Children\'s Play Research' },
+  { title:'$5 a day is $1,825 a year', intro:'Savings rate matters more than income.', bullets:['Massey Uni tracked NZ households for 20 years','Families saving 3% consistently end up better off than higher earners who don\'t save','Don\'t wait until you can "afford" to save — start with whatever you\'ve got'], author:'Dr Claire Matthews', source:'Massey University' },
+  { title:'Skip the extended warranty', intro:'You\'re already covered under NZ law.', bullets:['Consumer Guarantees Act covers you for a "reasonable" time — often longer than the warranty','Extended warranties are profitable for retailers because most stuff doesn\'t break','Save the $50–200 for your emergency fund instead'], author:'Consumer NZ', source:'consumer.org.nz' },
+  { title:'Plan meals Thursday, shop Friday', intro:'Cuts food spend 20–30% and halves waste.', bullets:['Thursday works because you\'re not hungry or rushed','Friday works because supermarkets markdown weekend stock','Check your supermarket\'s app for specials before you go'], author:'Love Food Hate Waste NZ', source:'lovefoodhatewaste.co.nz' },
+  { title:'Two bank accounts, that\'s it', intro:'Separate your bills from your spending money.', bullets:['Open a second account (free at any NZ bank)','On payday, auto-transfer your total bills amount into it','What\'s left in your main account is yours — you can\'t accidentally overspend on bills'], author:'Scott Pape', source:'The Barefoot Investor' },
+  { title:'Heat to 18 degrees, not 21', intro:'Saves $200–400 over a Wellington winter.', bullets:['16→18°C costs roughly half what 18→21°C costs','WHO says 18°C is fine for health','$15 thermometer on the wall pays for itself in a week'], author:'EECA & WHO', source:'WHO Housing Guidelines, 2018' },
+];
+
+// ISO week number
+function getISOWeek() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  return 1 + Math.round(((d - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+function renderWeeklyTips() {
+  const week = getISOWeek();
+  const startIdx = ((week - 1) * 3) % TIPS.length;
+  const weekTips = [
+    TIPS[startIdx % TIPS.length],
+    TIPS[(startIdx + 1) % TIPS.length],
+    TIPS[(startIdx + 2) % TIPS.length]
+  ];
+
+  const list = document.getElementById('tips-list');
+  list.innerHTML = weekTips.map(t => `
+    <div class="tip">
+      <div class="tip-title">${t.title}</div>
+      <div class="tip-body">${t.intro}</div>
+      <ul class="tip-bullets">${t.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+      <div class="tip-source">${t.author} · ${t.source}</div>
+    </div>
+  `).join('');
+}
+renderWeeklyTips();
+
+// Load live prices in background
+tryLoadLivePrices();
+
+// ─── Rankings ────────────────────────────────────────────
+function ordinal(n) {
+  if (n === 1) return 'Cheapest';
+  const s = ['th','st','nd','rd'];
+  const v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+function updateRankings() { /* removed — bottom bar deleted */ }
+
+// Hook rankings + provider re-render into recalcTotals
+const origRecalc = recalcTotals;
+let renderTimer;
+recalcTotals = function() { origRecalc(); updateRankings(); clearTimeout(renderTimer); renderTimer = setTimeout(renderAllProviders, 500); };
+updateRankings();
+
+// ─── Share ───────────────────────────────────────────────
+// ─── Welcome ────────────────────────────────────────────
+const welcomeEl = document.getElementById('welcome');
+const savedUser = JSON.parse(localStorage.getItem('utu-user') || 'null');
+
+function setGreeting(name) {
+  if (name) {
+    const el = document.getElementById('hdr-greeting');
+    el.innerHTML = `Kia ora ${name} <span class="signout">Sign out</span>`;
+    el.onclick = () => {
+      if (confirm('Sign out of Utu Buster?')) {
+        localStorage.removeItem('utu-user');
+        localStorage.removeItem('wip');
+        window.location.reload();
+      }
+    };
+  }
+}
+
+function prefillReminder(email) {
+  if (email) {
+    const subEmail = document.getElementById('sub-email');
+    if (subEmail && !subEmail.value) subEmail.value = email;
+  }
+}
+
+if (savedUser) {
+  welcomeEl.classList.add('hidden');
+  setGreeting(savedUser.name);
+  prefillReminder(savedUser.email);
+}
+
+document.getElementById('w-go').addEventListener('click', async () => {
+  const nameInput = document.getElementById('w-name');
+  const emailInput = document.getElementById('w-email');
+  const errEl = document.getElementById('w-err');
+  const btn = document.getElementById('w-go');
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim();
+
+  // Reset error state
+  errEl.textContent = '';
+  nameInput.classList.remove('error');
+  emailInput.classList.remove('error');
+
+  // Validate
+  if (!name) {
+    errEl.textContent = 'Please enter your first name';
+    nameInput.classList.add('error');
+    nameInput.focus();
+    return;
+  }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errEl.textContent = 'Please enter a valid email address';
+    emailInput.classList.add('error');
+    emailInput.focus();
+    return;
+  }
+
+  // Submit with loading state
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+
+  try {
+    // Save locally first so they can always get in
+    localStorage.setItem('utu-user', JSON.stringify({ name, email }));
+
+    // Try to subscribe (best effort, non-blocking for UX)
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    try {
+      await fetch('/api/bills?action=subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+    } catch {}
+
+    welcomeEl.classList.add('hidden');
+    setGreeting(name);
+    prefillReminder(email);
+  } catch (err) {
+    errEl.textContent = 'Something went wrong. Please try again.';
+    btn.disabled = false;
+    btn.textContent = 'Tīmata | Let\'s go';
+  }
+});
+
+// Allow Enter key to submit
+document.getElementById('w-email').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('w-go').click();
+});
+document.getElementById('w-name').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('w-email').focus();
+});
+
+
+// Geolocate and update CAB + library links per city
+const CITY_LIBRARIES = {
+  'Wellington': { url:'https://www.wcl.govt.nz', name:'Wellington City Libraries' },
+  'Lower Hutt': { url:'https://library.huttcity.govt.nz/', name:'Hutt City Libraries' },
+  'Upper Hutt': { url:'https://www.upperhuttlibrary.co.nz/home', name:'Upper Hutt Libraries' },
+  'Porirua': { url:'https://porirualibrary.org.nz/', name:'Porirua Library' },
+  'Kapiti': { url:'https://www.kapiticoast.govt.nz/libraries/', name:'Kāpiti Coast Libraries' },
+  'Auckland': { url:'https://www.aucklandlibraries.govt.nz', name:'Auckland Libraries' },
+  'Christchurch': { url:'https://my.christchurchcitylibraries.com', name:'Christchurch City Libraries' },
+  'Hamilton': { url:'https://hamiltonlibraries.co.nz', name:'Hamilton Libraries' },
+  'Dunedin': { url:'https://dunedinlibraries.govt.nz', name:'Dunedin Libraries' },
+  'Tauranga': { url:'https://library.tauranga.govt.nz', name:'Tauranga Libraries' },
+  'Palmerston North': { url:'https://citylibrary.pncc.govt.nz', name:'Palmerston North Library' },
+  'Napier': { url:'https://www.napierlibrary.co.nz/', name:'Napier Libraries' },
+  'Hastings': { url:'https://www.hastingsdc.govt.nz/services/libraries', name:'Hastings Libraries' },
+  'Nelson': { url:'https://www.nelsonpubliclibraries.co.nz/', name:'Nelson Public Libraries' },
+  'Whangārei': { url:'https://www.wdc.govt.nz/Services/Libraries', name:'Whangārei Libraries' },
+  'Whangarei': { url:'https://www.wdc.govt.nz/Services/Libraries', name:'Whangārei Libraries' },
+};
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`)
+      .then(r => r.json())
+      .then(data => {
+        const city = data.address?.city || data.address?.town || data.address?.suburb || '';
+        if (city) {
+          // CAB
+          const cabLink = document.getElementById('cab-link');
+          if (cabLink) {
+            cabLink.href = `https://www.cab.org.nz/find-cab?location=${encodeURIComponent(city)}`;
+            cabLink.textContent = `CAB near ${city} ↗`;
+          }
+          // Library
+          const libLink = document.getElementById('library-link');
+          if (libLink) {
+            // Try exact match, then partial
+            let match = CITY_LIBRARIES[city];
+            if (!match) {
+              const key = Object.keys(CITY_LIBRARIES).find(k => city.includes(k) || k.includes(city));
+              if (key) match = CITY_LIBRARIES[key];
+            }
+            if (match) {
+              libLink.href = match.url;
+              libLink.textContent = `Find it at ${match.name} ↗`;
+            }
+          }
+        }
+      }).catch(() => {});
+  }, () => {}, { timeout: 5000 });
+}
+
+// Toggle option breakdown
+document.getElementById('toggle-breakdown').addEventListener('click', function() {
+  const wrap = document.getElementById('breakdown-wrap');
+  const showing = wrap.style.display !== 'none';
+  wrap.style.display = showing ? 'none' : 'block';
+  this.textContent = showing ? 'Full Option Breakdown' : 'Hide Option Breakdown';
+});
+
+// Change my bills — go back to What I Pay
+document.getElementById('change-bills').addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('on'));
+  document.querySelector('.tab[data-tab="whatipay"]').classList.add('on');
+  document.getElementById('whatipay').classList.add('on');
+  window.scrollTo(0, 0);
+});
+
+// Header video — fade in when loaded
+const hdrVideo = document.querySelector('.hdr-video');
+if (hdrVideo) hdrVideo.addEventListener('canplay', () => hdrVideo.classList.add('loaded'));
+
+// Welcome video — fade in when loaded
+const welcomeVideo = document.getElementById('welcome-video');
+if (welcomeVideo) {
+  welcomeVideo.addEventListener('canplay', () => welcomeVideo.classList.add('loaded'));
+  // Some iOS versions require explicit play() after user interaction
+  welcomeVideo.play().catch(() => {});
+}
+
+// Bust It button — switch to Bust It tab
+document.getElementById('bust-it-btn').addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(x => x.classList.remove('on'));
+  document.querySelector('.tab[data-tab="payless"]').classList.add('on');
+  document.getElementById('payless').classList.add('on');
+  window.scrollTo(0, 0);
+});
+
+document.getElementById('share-btn').addEventListener('click', () => {
+  const current = document.getElementById('wip-current-total').textContent;
+  const best = document.getElementById('wip-best-total').textContent;
+  const diff = document.getElementById('wip-diff').textContent;
+  const annual = document.getElementById('wip-annual-amt').textContent;
+  const text = `Utu Buster says I could save ${diff} (${annual}) on my household bills! Currently paying ${current}, could be ${best}.\n\nCheck yours: utu-buster.vercel.app`;
+  if (navigator.share) {
+    navigator.share({ title: 'Utu Buster', text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('share-btn');
+      btn.textContent = 'Copied to clipboard';
+      setTimeout(() => { btn.textContent = 'Share my results'; }, 2000);
+    });
+  }
+});
+
+// ─── Subscribe ───────────────────────────────────────────
+document.getElementById('sub-btn').addEventListener('click', async () => {
+  const email = document.getElementById('sub-email').value.trim();
+  const msg = document.getElementById('sub-msg');
+  if (!email || !email.includes('@')) {
+    msg.style.display = 'block';
+    msg.style.color = '#E8A87C';
+    msg.textContent = 'Enter a valid email';
+    return;
+  }
+  try {
+    const r = await fetch('/api/bills?action=subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await r.json();
+    msg.style.display = 'block';
+    if (r.ok) {
+      msg.style.color = '#95D5B2';
+      msg.textContent = "Subscribed — you'll get your first bill check next quarter.";
+      document.getElementById('sub-email').value = '';
+    } else {
+      msg.style.color = '#E8A87C';
+      msg.textContent = data.error || 'Something went wrong';
+    }
+  } catch {
+    msg.style.display = 'block';
+    msg.style.color = '#E8A87C';
+    msg.textContent = 'Network error — try again';
+  }
+});
+
+// ─── Push notifications for hot deals ────────────────────
+const VAPID_PUBLIC_KEY = 'BKangGhatUglUqBAfUqR3_5u8ilMbW7CHieAz5gU_MpnxLB0z1lBoIZn30zhWTWz4KaLRKR4xhawJ6XWRH528BQ';
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+
+</script>
+</body>
+</html>
