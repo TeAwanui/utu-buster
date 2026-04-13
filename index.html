@@ -839,13 +839,14 @@ function buildMobileSlots() {
     amount: row.querySelector('.wip-mob-amt')?.value || ''
   }));
   section.innerHTML = '';
-  for (let i = 0; i < adults; i++) {
+  const startSlots = Math.max(1, existing.length);
+  for (let i = 0; i < startSlots; i++) {
     const row = document.createElement('div');
     row.className = 'wip-row';
     row.dataset.mobile = i;
     row.innerHTML = `
-      <select class="wip-select wip-mob-select"><option value="">Phone ${i+1}</option></select>
-      <div class="wip-amount-wrap"><input class="wip-amount wip-mob-amt" type="number" placeholder="p/m"></div>`;
+      <select class="wip-select wip-mob-select"><option value="">Mobile provider</option></select>
+      <div class="wip-amount-wrap"><input class="wip-amount wip-mob-amt" type="number" placeholder="p/m"></div>${i > 0 ? '<button class="wip-remove" title="Remove">×</button>' : ''}`;
     section.appendChild(row);
     const sel = row.querySelector('.wip-mob-select');
     fillSelectEl(sel, mobileProviderNames);
@@ -860,6 +861,7 @@ function buildMobileSlots() {
       recalcTotals();
     });
     row.querySelector('.wip-mob-amt').addEventListener('input', recalcTotals);
+    if (i > 0) row.querySelector('.wip-remove').addEventListener('click', () => { row.remove(); recalcTotals(); });
   }
   // Add phone button
   const btn = document.createElement('button');
