@@ -212,7 +212,7 @@ async function handleReport(req, res) {
         method: 'POST',
         headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Utu Buster <onboarding@resend.dev>',
+          from: 'Utu Buster <hello@utubuster.nz>',
           to: recipient.email,
           subject: `Utu Buster, are you paying too much?`,
           html, text
